@@ -18,11 +18,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
+import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.santelocale.data.entity.FoodItem
 import com.santelocale.ui.components.CurvedScreenWrapper
@@ -152,7 +157,10 @@ private fun PillTab(
             .fillMaxHeight()
             .clip(RoundedCornerShape(16.dp))
             .background(backgroundColor)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .semantics {
+                contentDescription = if (isSelected) "$text sélectionné" else text
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -161,7 +169,8 @@ private fun PillTab(
             fontWeight = fontWeight,
             color = textColor,
             textAlign = TextAlign.Center,
-            maxLines = 1
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -187,7 +196,11 @@ private fun FoodCard(food: FoodItem) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { expanded = !expanded }
-            .animateContentSize(),
+            .animateContentSize()
+            .semantics {
+                stateDescription = if (expanded) "Conseil affiché" else "Conseil masqué"
+                contentDescription = "Carte pour ${food.name}. Appuyez pour voir les conseils."
+            },
         shape = RoundedCornerShape(24.dp),
         color = Color.White,
         shadowElevation = 1.dp
@@ -197,9 +210,9 @@ private fun FoodCard(food: FoodItem) {
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Image: 80dp square, RoundedCornerShape(16.dp)
+                // Image: Fixed size with optimization
                 Surface(
-                    modifier = Modifier.size(80.dp),
+                    modifier = Modifier.size(80.dp), // Fixed size for aspect ratio 1:1
                     shape = RoundedCornerShape(16.dp),
                     color = categoryColor.copy(alpha = 0.1f)
                 ) {
@@ -207,8 +220,11 @@ private fun FoodCard(food: FoodItem) {
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(food.imageUrl)
                             .crossfade(true)
+                            .memoryCachePolicy(CachePolicy.ENABLED)
+                            .diskCachePolicy(CachePolicy.ENABLED)
+                            .size(300, 300) // Optimize: Load resized image
                             .build(),
-                        contentDescription = food.name,
+                        contentDescription = "Photo de ${food.name}",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.clip(RoundedCornerShape(16.dp)),
                         loading = {
@@ -240,7 +256,9 @@ private fun FoodCard(food: FoodItem) {
                         text = food.name,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Slate800
+                        color = Slate800,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -252,7 +270,9 @@ private fun FoodCard(food: FoodItem) {
                         },
                         fontSize = 12.sp,
                         color = categoryColor,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -270,7 +290,7 @@ private fun FoodCard(food: FoodItem) {
                     ) {
                         Icon(
                             Icons.Default.Lightbulb,
-                            contentDescription = "Tip",
+                            contentDescription = "Conseil",
                             tint = Amber500,
                             modifier = Modifier.size(20.dp)
                         )

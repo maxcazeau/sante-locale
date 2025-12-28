@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -207,7 +208,7 @@ fun GlucoseInputScreen(
 
 /**
  * Context Toggle Button (Avant/Après repas).
- * Emerald theme when selected, Outlined Slate when unselected.
+ * Emerald theme when selected, Light Gray theme when unselected.
  */
 @Composable
 private fun ContextToggleButton(
@@ -219,10 +220,15 @@ private fun ContextToggleButton(
     Surface(
         modifier = modifier
             .height(48.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .alpha(if (isSelected) 1f else 0.8f),
         shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) Emerald50 else Color.White,
-        border = if (isSelected) BorderStroke(1.5.dp, Emerald500) else BorderStroke(1.dp, Slate300),
+        color = if (isSelected) Emerald50 else Color(0xFFF5F5F5),
+        border = if (isSelected) {
+            BorderStroke(1.5.dp, Emerald500)
+        } else {
+            BorderStroke(1.dp, Color(0xFFE0E0E0))
+        },
         shadowElevation = 0.dp
     ) {
         Box(
