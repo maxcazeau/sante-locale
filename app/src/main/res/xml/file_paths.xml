@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- External files directory for PDF documents -->
+    <external-files-path
+        name="documents"
+        path="Documents/" />
+
+    <!-- Internal files directory as fallback -->
+    <files-path
+        name="internal_documents"
+        path="." />
+</paths>

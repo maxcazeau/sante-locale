@@ -167,6 +167,7 @@ fun SanteLocaleApp(
             HistoryScreen(
                 viewModel = historyViewModel,
                 unit = unit,
+                userName = userName,
                 onBack = { navController.popBackStack() }
             )
         }

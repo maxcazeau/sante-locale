@@ -9,12 +9,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import com.santelocale.data.entity.HealthLog
 import com.santelocale.ui.components.Header
 import com.santelocale.ui.theme.*
 import com.santelocale.ui.viewmodel.HistoryViewModel
+import com.santelocale.utils.PdfGenerator
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,39 +41,68 @@ private val Orange100 = Color(0xFFFFEDD5)
 fun HistoryScreen(
     viewModel: HistoryViewModel,
     unit: String,
+    userName: String = "",
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val logs by viewModel.allLogs.collectAsState()
+    val context = LocalContext.current
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Slate50)
-    ) {
-        // Header
-        Header(
-            title = "Historique",
-            onBack = onBack
-        )
-
-        // Content
-        if (logs.isEmpty()) {
-            // Empty state
-            EmptyState()
-        } else {
-            // Log list
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(logs, key = { it.id }) { log ->
-                    HistoryItem(
-                        log = log,
-                        unit = unit
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        containerColor = Slate50,
+        floatingActionButton = {
+            // Only show FAB if there are logs to export
+            if (logs.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = {
+                        PdfGenerator.generateAndShare(
+                            context = context,
+                            userName = userName,
+                            logs = logs,
+                            unit = unit
+                        )
+                    },
+                    containerColor = Emerald600,
+                    contentColor = White
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Exporter PDF"
                     )
+                }
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            // Header
+            Header(
+                title = "Historique",
+                onBack = onBack
+            )
+
+            // Content
+            if (logs.isEmpty()) {
+                // Empty state
+                EmptyState()
+            } else {
+                // Log list
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(logs, key = { it.id }) { log ->
+                        HistoryItem(
+                            log = log,
+                            unit = unit
+                        )
+                    }
                 }
             }
         }
