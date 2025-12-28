@@ -22,20 +22,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.santelocale.data.entity.HealthLog
-import com.santelocale.ui.components.Header
-import com.santelocale.ui.theme.*
+import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.HistoryViewModel
 import com.santelocale.utils.PdfGenerator
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Additional colors for history items
+// Colors
 private val Blue100 = Color(0xFFDBEAFE)
+private val Blue600 = Color(0xFF2563EB)
 private val Orange100 = Color(0xFFFFEDD5)
+private val Orange500 = Color(0xFFF97316)
+private val Slate400 = Color(0xFF94A3B8)
+private val Slate700 = Color(0xFF334155)
+private val Slate800 = Color(0xFF1E293B)
+private val Emerald600 = Color(0xFF059669)
 
 /**
  * History screen showing all health logs.
- * Matches the React HistoryView component design.
  */
 @Composable
 fun HistoryScreen(
@@ -48,11 +52,31 @@ fun HistoryScreen(
     val logs by viewModel.allLogs.collectAsState()
     val context = LocalContext.current
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        containerColor = Slate50,
-        floatingActionButton = {
-            // Only show FAB if there are logs to export
+    CurvedScreenWrapper(
+        title = "Historique",
+        onBack = onBack
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (logs.isEmpty()) {
+                // Empty State - Large gray icon centered
+                EmptyState()
+            } else {
+                // History List
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(logs, key = { it.id }) { log ->
+                        HistoryItemCard(
+                            log = log,
+                            unit = unit
+                        )
+                    }
+                }
+            }
+
+            // FAB for PDF export
             if (logs.isNotEmpty()) {
                 FloatingActionButton(
                     onClick = {
@@ -64,7 +88,10 @@ fun HistoryScreen(
                         )
                     },
                     containerColor = Emerald600,
-                    contentColor = White
+                    contentColor = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Share,
@@ -73,44 +100,11 @@ fun HistoryScreen(
                 }
             }
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            // Header
-            Header(
-                title = "Historique",
-                onBack = onBack
-            )
-
-            // Content
-            if (logs.isEmpty()) {
-                // Empty state
-                EmptyState()
-            } else {
-                // Log list
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(logs, key = { it.id }) { log ->
-                        HistoryItem(
-                            log = log,
-                            unit = unit
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 
 /**
- * Empty state when no logs are available.
+ * Empty state - Large gray History icon centered.
  */
 @Composable
 private fun EmptyState(
@@ -121,21 +115,21 @@ private fun EmptyState(
         contentAlignment = Alignment.Center
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
                 imageVector = Icons.Default.History,
                 contentDescription = null,
-                tint = Slate400.copy(alpha = 0.5f),
-                modifier = Modifier.size(64.dp)
+                tint = Slate400.copy(alpha = 0.3f),
+                modifier = Modifier.size(96.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Aucun historique disponible.",
-                fontSize = 16.sp,
+                text = "Aucun historique",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
                 color = Slate400,
                 textAlign = TextAlign.Center
             )
@@ -144,11 +138,12 @@ private fun EmptyState(
 }
 
 /**
- * Individual history log item.
- * Shows icon, title, date, and value.
+ * History Item Card.
+ * White Card, RoundedCornerShape(20.dp), elevation 2dp.
+ * Layout: Row with circular icon (left), date/time (middle), value (right).
  */
 @Composable
-private fun HistoryItem(
+private fun HistoryItemCard(
     log: HealthLog,
     unit: String,
     modifier: Modifier = Modifier
@@ -159,9 +154,6 @@ private fun HistoryItem(
     val iconBackground = if (isGlucose) Blue100 else Orange100
     val iconTint = if (isGlucose) Blue600 else Orange500
 
-    // Title text
-    val title = if (isGlucose) "Glycémie" else (log.label ?: "Activité")
-
     // Value display
     val displayValue = if (isGlucose) {
         log.displayValue ?: log.value.toInt().toString()
@@ -170,76 +162,72 @@ private fun HistoryItem(
     }
     val valueUnit = if (isGlucose) unit else "min"
 
-    // Format date: "Lun, 12 Oct - 14:30"
-    val formattedDate = formatDate(log.date)
+    // Format date and time separately
+    val (formattedDate, formattedTime) = formatDateTime(log.date)
 
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        color = White,
-        shadowElevation = 2.dp
+        shape = RoundedCornerShape(20.dp),
+        color = Color.White,
+        shadowElevation = 1.dp
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left side: Icon + Info
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            // Left: Circular Icon Background
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(iconBackground, CircleShape),
+                contentAlignment = Alignment.Center
             ) {
-                // Icon with colored background
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(iconBackground, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isGlucose) Icons.Default.WaterDrop else Icons.Default.DirectionsRun,
-                        contentDescription = null,
-                        tint = iconTint,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                // Title and date
-                Column {
-                    Text(
-                        text = title,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Slate800
-                    )
-                    Text(
-                        text = formattedDate,
-                        fontSize = 12.sp,
-                        color = Slate500
-                    )
-                }
+                Icon(
+                    imageVector = if (isGlucose) Icons.Default.WaterDrop else Icons.Default.DirectionsRun,
+                    contentDescription = null,
+                    tint = iconTint,
+                    modifier = Modifier.size(24.dp)
+                )
             }
 
-            // Right side: Value
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Middle: Date (Bold) and Time (Gray)
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = formattedDate,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Slate800
+                )
+                Text(
+                    text = formattedTime,
+                    fontSize = 14.sp,
+                    color = Slate400
+                )
+            }
+
+            // Right: Value (Large font)
             Row(
                 verticalAlignment = Alignment.Bottom
             ) {
                 Text(
                     text = displayValue,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Black,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
                     color = Slate700
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = valueUnit,
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.Medium,
                     color = Slate400,
-                    modifier = Modifier.padding(bottom = 2.dp)
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
         }
@@ -247,12 +235,19 @@ private fun HistoryItem(
 }
 
 /**
- * Format timestamp to French date string.
- * Example: "Lun, 12 oct. - 14:30"
+ * Format timestamp to separate date and time strings.
+ * Date: "Lun 12 Oct" (Bold)
+ * Time: "14:30" (Gray)
  */
-private fun formatDate(timestamp: Long): String {
+private fun formatDateTime(timestamp: Long): Pair<String, String> {
     val locale = Locale.FRENCH
-    val dateFormat = SimpleDateFormat("EEE, d MMM - HH:mm", locale)
-    return dateFormat.format(Date(timestamp))
-        .replaceFirstChar { it.uppercaseChar() } // Capitalize first letter
+    val date = Date(timestamp)
+
+    val dateFormat = SimpleDateFormat("EEE d MMM", locale)
+    val timeFormat = SimpleDateFormat("HH:mm", locale)
+
+    val formattedDate = dateFormat.format(date).replaceFirstChar { it.uppercaseChar() }
+    val formattedTime = timeFormat.format(date)
+
+    return Pair(formattedDate, formattedTime)
 }
