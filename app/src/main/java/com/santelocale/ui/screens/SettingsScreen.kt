@@ -1,5 +1,10 @@
 package com.santelocale.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
@@ -30,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -40,8 +46,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.SettingsViewModel
+import com.santelocale.utils.ReminderScheduler
 
 // Colors
 private val Slate50 = Color(0xFFF8FAFC)
@@ -125,6 +133,7 @@ fun SettingsScreen(
                         onBack = handleBack
                     )
                     SettingsRoute.Notifications -> NotificationSettings(
+                        viewModel = viewModel,
                         onBack = handleBack
                     )
                     SettingsRoute.Privacy -> PrivacySettings(
@@ -258,10 +267,25 @@ private fun AccountSettings(
 
 @Composable
 private fun NotificationSettings(
+    viewModel: SettingsViewModel,
     onBack: () -> Unit
 ) {
-    var morningReminder by remember { mutableStateOf(true) }
-    var eveningReminder by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val morningReminder by viewModel.morningReminder.collectAsState()
+    val eveningReminder by viewModel.eveningReminder.collectAsState()
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { /* No-op, just requesting */ }
+    )
+
+    fun checkAndRequestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -277,7 +301,15 @@ private fun NotificationSettings(
                 title = "Matin (A jeun)",
                 subtitle = "07:00 AM",
                 checked = morningReminder,
-                onCheckedChange = { morningReminder = it }
+                onCheckedChange = { enabled ->
+                    viewModel.setMorningReminder(enabled)
+                    if (enabled) {
+                        checkAndRequestPermission()
+                        ReminderScheduler.scheduleReminder(context, 7, 0, "morning_reminder", "Bonjour !", "N'oubliez pas votre glycémie à jeun.")
+                    } else {
+                        ReminderScheduler.cancelReminder(context, "morning_reminder")
+                    }
+                }
             )
             
             Divider(color = Slate100, thickness = 1.dp)
@@ -286,14 +318,22 @@ private fun NotificationSettings(
                 title = "Soir (Après repas)",
                 subtitle = "08:00 PM",
                 checked = eveningReminder,
-                onCheckedChange = { eveningReminder = it }
+                onCheckedChange = { enabled ->
+                    viewModel.setEveningReminder(enabled)
+                    if (enabled) {
+                        checkAndRequestPermission()
+                        ReminderScheduler.scheduleReminder(context, 20, 0, "evening_reminder", "Bonsoir !", "Avez-vous vérifié votre glycémie après le repas ?")
+                    } else {
+                        ReminderScheduler.cancelReminder(context, "evening_reminder")
+                    }
+                }
             )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         PrimaryButton(
-            text = "Enregistrer",
+            text = "Retour",
             onClick = onBack
         )
     }

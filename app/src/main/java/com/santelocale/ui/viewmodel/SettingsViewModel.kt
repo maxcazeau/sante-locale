@@ -32,6 +32,18 @@ class SettingsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "mg/dL")
 
     /**
+     * Morning reminder state as StateFlow.
+     */
+    val morningReminder: StateFlow<Boolean> = userPreferencesRepository.morningReminderFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    /**
+     * Evening reminder state as StateFlow.
+     */
+    val eveningReminder: StateFlow<Boolean> = userPreferencesRepository.eveningReminderFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    /**
      * Update the user's name.
      */
     fun updateName(name: String) {
@@ -47,6 +59,24 @@ class SettingsViewModel(
     fun toggleUnit(unit: String) {
         viewModelScope.launch {
             userPreferencesRepository.saveUnit(unit)
+        }
+    }
+
+    /**
+     * Toggle morning reminder.
+     */
+    fun setMorningReminder(enabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveMorningReminder(enabled)
+        }
+    }
+
+    /**
+     * Toggle evening reminder.
+     */
+    fun setEveningReminder(enabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveEveningReminder(enabled)
         }
     }
 

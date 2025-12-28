@@ -3,6 +3,7 @@ package com.santelocale.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -14,7 +15,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "us
 
 /**
  * Repository for user preferences using Jetpack DataStore.
- * Stores user name and glucose unit preference.
+ * Stores user name, glucose unit, and notification preferences.
  */
 class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
 
@@ -22,6 +23,8 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
         // Preference keys
         private val USER_NAME = stringPreferencesKey("user_name")
         private val GLUCOSE_UNIT = stringPreferencesKey("glucose_unit")
+        private val MORNING_REMINDER = booleanPreferencesKey("morning_reminder")
+        private val EVENING_REMINDER = booleanPreferencesKey("evening_reminder")
     }
 
     /**
@@ -41,6 +44,22 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
     }
 
     /**
+     * Flow of morning reminder state.
+     * Default: true
+     */
+    val morningReminderFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[MORNING_REMINDER] ?: true
+    }
+
+    /**
+     * Flow of evening reminder state.
+     * Default: false
+     */
+    val eveningReminderFlow: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[EVENING_REMINDER] ?: false
+    }
+
+    /**
      * Save the user's name.
      */
     suspend fun saveName(name: String) {
@@ -56,6 +75,24 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
     suspend fun saveUnit(unit: String) {
         dataStore.edit { preferences ->
             preferences[GLUCOSE_UNIT] = unit
+        }
+    }
+
+    /**
+     * Save morning reminder state.
+     */
+    suspend fun saveMorningReminder(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[MORNING_REMINDER] = enabled
+        }
+    }
+
+    /**
+     * Save evening reminder state.
+     */
+    suspend fun saveEveningReminder(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[EVENING_REMINDER] = enabled
         }
     }
 
