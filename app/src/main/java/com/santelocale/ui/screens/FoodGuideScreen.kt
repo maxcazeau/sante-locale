@@ -1,75 +1,43 @@
 package com.santelocale.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Eco
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
 import com.santelocale.data.entity.FoodItem
 import com.santelocale.ui.components.Header
-import com.santelocale.ui.theme.*
 import com.santelocale.ui.viewmodel.FoodViewModel
 
-// Category configuration matching React mockup
-private data class CategoryConfig(
-    val label: String,
-    val color: Color,
-    val textColor: Color,
-    val borderColor: Color,
-    val description: String
-)
-
-private val categories = mapOf(
-    "VERT" to CategoryConfig(
-        label = "À VOLONTÉ",
-        color = Emerald600,
-        textColor = Emerald700,
-        borderColor = Color(0xFFA7F3D0), // emerald-200
-        description = "Mangez tous les jours."
-    ),
-    "JAUNE" to CategoryConfig(
-        label = "MODÉRÉMENT",
-        color = Yellow500,
-        textColor = Color(0xFFA16207), // yellow-700
-        borderColor = Color(0xFFFEF08A), // yellow-200
-        description = "Petites quantités seulement."
-    ),
-    "ROUGE" to CategoryConfig(
-        label = "À ÉVITER",
-        color = Red600,
-        textColor = Color(0xFFB91C1C), // red-700
-        borderColor = Color(0xFFFECACA), // red-200
-        description = "Dangereux pour le sucre."
-    )
-)
-
-// Additional colors
-private val Blue500 = Color(0xFF3B82F6)
-private val Blue100 = Color(0xFFDBEAFE)
+// Colors
+private val Emerald600 = Color(0xFF059669)
+private val Yellow600 = Color(0xFFCA8A04)
+private val Red600 = Color(0xFFDC2626)
+private val Slate50 = Color(0xFFF8FAFC)
+private val Amber500 = Color(0xFFF59E0B)
 
 /**
- * Food Guide screen with traffic light category tabs.
- * Matches the React FoodGuide component design.
+ * Food Guide screen with ScrollableTabRow and row-based card layout.
  */
 @Composable
 fun FoodGuideScreen(
@@ -79,9 +47,6 @@ fun FoodGuideScreen(
 ) {
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val foods by viewModel.foods.collectAsState()
-    val expandedFoodId by viewModel.expandedFoodId.collectAsState()
-
-    val currentConfig = categories[selectedCategory] ?: categories["VERT"]!!
 
     Column(
         modifier = modifier
@@ -89,255 +54,200 @@ fun FoodGuideScreen(
             .background(Slate50)
     ) {
         // Header
-        Header(
-            title = "Guide Alimentaire",
-            onBack = onBack
-        )
+        Header(title = "Guide Alimentaire", onBack = onBack)
 
-        // Category Tab Row
-        CategoryTabs(
-            selectedCategory = selectedCategory,
-            onCategorySelected = { viewModel.selectCategory(it) }
-        )
-
-        // Description Banner
-        DescriptionBanner(
-            category = selectedCategory,
-            config = currentConfig
-        )
+        // ScrollableTabRow prevents "MODÉRÉMENT" from cutting off
+        ScrollableTabRow(
+            selectedTabIndex = when (selectedCategory) {
+                "VERT" -> 0
+                "JAUNE" -> 1
+                else -> 2
+            },
+            containerColor = Color.White,
+            contentColor = Color.Black,
+            edgePadding = 0.dp,
+            divider = {},
+            indicator = { tabPositions ->
+                val selectedIndex = when (selectedCategory) {
+                    "VERT" -> 0
+                    "JAUNE" -> 1
+                    else -> 2
+                }
+                val indicatorColor = when (selectedCategory) {
+                    "VERT" -> Emerald600
+                    "JAUNE" -> Yellow600
+                    else -> Red600
+                }
+                Box(
+                    Modifier
+                        .tabIndicatorOffset(tabPositions[selectedIndex])
+                        .fillMaxWidth()
+                        .height(3.dp)
+                        .background(indicatorColor)
+                )
+            }
+        ) {
+            FoodTab("À VOLONTÉ", selectedCategory == "VERT", Emerald600) {
+                viewModel.selectCategory("VERT")
+            }
+            FoodTab("MODÉRÉMENT", selectedCategory == "JAUNE", Yellow600) {
+                viewModel.selectCategory("JAUNE")
+            }
+            FoodTab("À ÉVITER", selectedCategory == "ROUGE", Red600) {
+                viewModel.selectCategory("ROUGE")
+            }
+        }
 
         // Food List
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(foods, key = { it.id }) { food ->
-                FoodCard(
-                    food = food,
-                    isExpanded = expandedFoodId == food.id,
-                    onClick = { viewModel.toggleFoodExpanded(food.id) }
-                )
+                FoodCardRow(food = food)
             }
         }
     }
 }
 
 /**
- * Category tab row with three tabs: VERT, JAUNE, ROUGE
+ * Tab component for category selection.
  */
 @Composable
-private fun CategoryTabs(
-    selectedCategory: String,
-    onCategorySelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+private fun FoodTab(
+    text: String,
+    isSelected: Boolean,
+    color: Color,
+    onClick: () -> Unit
 ) {
-    Row(modifier = modifier.fillMaxWidth()) {
-        listOf("VERT", "JAUNE", "ROUGE").forEach { category ->
-            val config = categories[category]!!
-            val isSelected = selectedCategory == category
-
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(
-                        if (isSelected) config.color else White
-                    )
-                    .then(
-                        if (!isSelected) {
-                            Modifier.border(
-                                width = 0.dp,
-                                color = Color.Transparent
-                            )
-                        } else Modifier
-                    )
-                    .clickable { onCategorySelected(category) }
-                    .padding(vertical = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = config.label,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp,
-                    color = if (isSelected) White else Slate500
-                )
-            }
-
-            // Bottom border for unselected tabs
-            if (!isSelected) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(2.dp)
-                        .background(Slate100)
-                )
-            }
-        }
-    }
-}
-
-/**
- * Description banner below tabs showing category guidance.
- */
-@Composable
-private fun DescriptionBanner(
-    category: String,
-    config: CategoryConfig,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = White
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = config.borderColor
-                )
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Icon based on category
-            when (category) {
-                "VERT" -> Icon(
-                    imageVector = Icons.Default.Eco,
-                    contentDescription = null,
-                    tint = config.textColor,
-                    modifier = Modifier.size(16.dp)
-                )
-                "ROUGE" -> Icon(
-                    imageVector = Icons.Default.Warning,
-                    contentDescription = null,
-                    tint = config.textColor,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-
-            if (category == "VERT" || category == "ROUGE") {
-                Spacer(modifier = Modifier.width(6.dp))
-            }
-
+    Tab(
+        selected = isSelected,
+        onClick = onClick,
+        text = {
             Text(
-                text = config.description,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = config.textColor
+                text = text,
+                color = if (isSelected) color else Color.Gray,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
-    }
+    )
 }
 
 /**
- * Individual food card with image, name, and expandable tip.
+ * Row-based food card with image on left, text on right.
+ * Expands to show health tip when clicked.
  */
 @Composable
-private fun FoodCard(
-    food: FoodItem,
-    isExpanded: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier
+private fun FoodCardRow(food: FoodItem) {
+    var expanded by remember { mutableStateOf(false) }
+
+    // Determine border color based on category
+    val categoryColor = when (food.category) {
+        "VERT" -> Emerald600
+        "JAUNE" -> Yellow600
+        "ROUGE" -> Red600
+        else -> Color.Gray
+    }
+
+    Card(
+        modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(
-                width = 2.dp,
-                color = if (isExpanded) Blue500 else Color.Transparent,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .then(
-                if (isExpanded) {
-                    Modifier.border(
-                        width = 4.dp,
-                        color = Blue100,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                } else Modifier
-            )
-            .clickable(onClick = onClick),
+            .clickable { expanded = !expanded }
+            .animateContentSize(),
         shape = RoundedCornerShape(12.dp),
-        shadowElevation = 2.dp,
-        color = White
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(2.dp),
+        border = if (expanded) BorderStroke(2.dp, categoryColor) else null
     ) {
         Column {
-            // Image with gradient overlay and title
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(128.dp)
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Food image
-                AsyncImage(
-                    model = food.imageUrl,
-                    contentDescription = food.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-
-                // Gradient overlay at bottom
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.8f)
+                // Image Box (Left Side)
+                Surface(
+                    modifier = Modifier.size(80.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    color = categoryColor.copy(alpha = 0.1f)
+                ) {
+                    SubcomposeAsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(food.imageUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = food.name,
+                        contentScale = ContentScale.Crop,
+                        loading = {
+                            Box(contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = categoryColor
                                 )
-                            )
-                        )
-                )
+                            }
+                        },
+                        error = {
+                            // Fallback Icon when offline/broken URL
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Image,
+                                    contentDescription = null,
+                                    tint = categoryColor.copy(alpha = 0.5f)
+                                )
+                            }
+                        }
+                    )
+                }
 
-                // Food name
-                Text(
-                    text = food.name,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = White,
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(12.dp)
-                )
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Text Content (Right Side)
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = food.name,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    // Mini-badge for category
+                    Text(
+                        text = when (food.category) {
+                            "VERT" -> "Bon pour la santé"
+                            "JAUNE" -> "Petite portion"
+                            "ROUGE" -> "Attention danger"
+                            else -> ""
+                        },
+                        fontSize = 12.sp,
+                        color = categoryColor,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
 
-            // Expandable tip section
-            AnimatedVisibility(
-                visible = isExpanded,
-                enter = expandVertically(),
-                exit = shrinkVertically()
-            ) {
+            // Expanded Tip Section
+            if (expanded) {
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = Slate50
+                    color = Slate50,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = Slate100
-                            )
-                            .padding(16.dp),
+                        modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.Top
                     ) {
-                        Text(
-                            text = "\uD83D\uDCA1", // 💡 lightbulb emoji
-                            fontSize = 18.sp
+                        Icon(
+                            Icons.Default.Lightbulb,
+                            contentDescription = "Tip",
+                            tint = Amber500,
+                            modifier = Modifier.size(20.dp)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = food.tip,
-                            fontSize = 16.sp,
-                            color = Slate700,
-                            lineHeight = 24.sp
+                            fontSize = 14.sp,
+                            color = Color.DarkGray,
+                            lineHeight = 20.sp
                         )
                     }
                 }
