@@ -9,14 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.santelocale.data.UserPreferencesRepository
+import com.santelocale.data.dataStore
 import com.santelocale.data.database.HealthDatabase
 import com.santelocale.data.repository.HealthRepository
 import com.santelocale.ui.screens.ActivityInputScreen
@@ -38,9 +36,6 @@ import com.santelocale.ui.viewmodel.HistoryViewModel
 import com.santelocale.ui.viewmodel.HistoryViewModelFactory
 import com.santelocale.ui.viewmodel.SettingsViewModel
 import com.santelocale.ui.viewmodel.SettingsViewModelFactory
-
-// DataStore for user settings (name and unit preference)
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 /**
  * Navigation routes for the app.
@@ -96,8 +91,8 @@ fun SanteLocaleApp(
     val navController = rememberNavController()
 
     // User settings from repository
-    val userName by userPreferencesRepository.userName.collectAsState(initial = "")
-    val unit by userPreferencesRepository.glucoseUnit.collectAsState(initial = "mg/dL")
+    val userName by userPreferencesRepository.userNameFlow.collectAsState(initial = "")
+    val unit by userPreferencesRepository.glucoseUnitFlow.collectAsState(initial = "mg/dL")
 
     // ViewModels
     val dashboardViewModel: DashboardViewModel = viewModel(

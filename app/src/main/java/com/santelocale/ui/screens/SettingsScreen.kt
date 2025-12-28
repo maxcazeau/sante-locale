@@ -157,8 +157,8 @@ fun SettingsScreen(
             // Save Button
             Button(
                 onClick = {
-                    viewModel.updateUserName(nameInput)
-                    viewModel.updateGlucoseUnit(selectedUnit)
+                    viewModel.updateName(nameInput)
+                    viewModel.toggleUnit(selectedUnit)
                     onBack()
                 },
                 modifier = Modifier
@@ -182,7 +182,7 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             // Divider
-            HorizontalDivider(
+            Divider(
                 color = Slate200,
                 thickness = 1.dp
             )
