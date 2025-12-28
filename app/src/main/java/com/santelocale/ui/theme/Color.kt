@@ -12,6 +12,7 @@ val Emerald800 = Color(0xFF065F46)  // Offline badge
 val Blue600 = Color(0xFF2563EB)     // Glucose button
 
 // Orange - Activity (from React: bg-orange-500)
+val Orange50 = Color(0xFFFFF7ED)    // Activity button pressed background
 val Orange500 = Color(0xFFF97316)   // Activity button
 val Orange600 = Color(0xFFEA580C)   // Activity button hover
 
