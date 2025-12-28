@@ -82,6 +82,9 @@ dependencies {
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    // Gson for JSON parsing
+    implementation("com.google.code.gson:gson:2.10.1")
+
     // WorkManager (for future background sync)
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 

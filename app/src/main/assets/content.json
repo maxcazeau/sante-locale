@@ -1,0 +1,145 @@
+{
+  "version": 1.0,
+  "foods": [
+    {
+      "id": "f1",
+      "name": "Feuilles de Jute (Lalo)",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Lalo",
+      "tip": "Excellent ! Riche en fibres, ne fait pas monter le sucre."
+    },
+    {
+      "id": "f2",
+      "name": "Gombo (Kalalou)",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Gombo",
+      "tip": "Très bon pour stabiliser le diabète."
+    },
+    {
+      "id": "f3",
+      "name": "Chayote (Mirliton)",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Mirliton",
+      "tip": "Mangez-en autant que vous voulez."
+    },
+    {
+      "id": "f4",
+      "name": "Avocat (Zaboka)",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Avocat",
+      "tip": "Bonnes graisses. Idéal pour couper la faim."
+    },
+    {
+      "id": "f5",
+      "name": "Poisson (Sauce/Grillé)",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Poisson",
+      "tip": "Préférez le poisson en sauce ou grillé, pas frit."
+    },
+    {
+      "id": "f6",
+      "name": "Poulet (Dur)",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Poulet",
+      "tip": "Mangez la viande, évitez la peau grasse."
+    },
+    {
+      "id": "f7",
+      "name": "Œufs",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Oeufs",
+      "tip": "Excellente source de protéines."
+    },
+    {
+      "id": "f8",
+      "name": "Chou",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Chou",
+      "tip": "Parfait pour remplir l’estomac sans sucre."
+    },
+    {
+      "id": "f9",
+      "name": "Aubergine (Berejenn)",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Aubergine",
+      "tip": "Délicieux en ragoût (Legim)."
+    },
+    {
+      "id": "f10",
+      "name": "Cresson",
+      "category": "VERT",
+      "image_url": "https://placehold.co/400x300/059669/ffffff?text=Cresson",
+      "tip": "Plein de vitamines."
+    },
+    {
+      "id": "f11",
+      "name": "Haricots (Pwa)",
+      "category": "JAUNE",
+      "image_url": "https://placehold.co/400x300/ca8a04/ffffff?text=Haricots",
+      "tip": "Bon pour la santé, mais attention à la portion (une petite tasse)."
+    },
+    {
+      "id": "f12",
+      "name": "Banane Bouillie",
+      "category": "JAUNE",
+      "image_url": "https://placehold.co/400x300/ca8a04/ffffff?text=Banane+Bouillie",
+      "tip": "Mangez 2 ou 3 morceaux maximum avec des légumes."
+    },
+    {
+      "id": "f13",
+      "name": "Fruit à Pain (Lam)",
+      "category": "JAUNE",
+      "image_url": "https://placehold.co/400x300/ca8a04/ffffff?text=Lam",
+      "tip": "C'est un féculent. À manger avec modération."
+    },
+    {
+      "id": "f14",
+      "name": "Patate Douce",
+      "category": "JAUNE",
+      "image_url": "https://placehold.co/400x300/ca8a04/ffffff?text=Patate+Douce",
+      "tip": "Meilleur que la pomme de terre, mais reste sucré."
+    },
+    {
+      "id": "f15",
+      "name": "Mais Moulu",
+      "category": "JAUNE",
+      "image_url": "https://placehold.co/400x300/ca8a04/ffffff?text=Mais+Moulu",
+      "tip": "Mangez toujours avec beaucoup de légumes verts."
+    },
+    {
+      "id": "f16",
+      "name": "Igname",
+      "category": "JAUNE",
+      "image_url": "https://placehold.co/400x300/ca8a04/ffffff?text=Igname",
+      "tip": "Un morceau suffit."
+    },
+    {
+      "id": "f17",
+      "name": "Riz Blanc",
+      "category": "ROUGE",
+      "image_url": "https://placehold.co/400x300/dc2626/ffffff?text=Riz+Blanc",
+      "tip": "Attention ! Le riz blanc fait monter le sucre très vite."
+    },
+    {
+      "id": "f18",
+      "name": "Banane Pesée",
+      "category": "ROUGE",
+      "image_url": "https://placehold.co/400x300/dc2626/ffffff?text=Banane+Peze",
+      "tip": "La friture n'est pas bonne. Préférez la banane bouillie."
+    },
+    {
+      "id": "f19",
+      "name": "Pain Blanc",
+      "category": "ROUGE",
+      "image_url": "https://placehold.co/400x300/dc2626/ffffff?text=Pain+Blanc",
+      "tip": "Farine blanche raffinée. À éviter."
+    },
+    {
+      "id": "f20",
+      "name": "Akasan",
+      "category": "ROUGE",
+      "image_url": "https://placehold.co/400x300/dc2626/ffffff?text=Akasan",
+      "tip": "Trop de sucre et de lait condensé."
+    }
+  ]
+}

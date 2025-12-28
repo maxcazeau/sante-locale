@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.santelocale.data.loadFoodData
 import com.santelocale.data.dao.FoodItemDao
 import com.santelocale.data.dao.HealthLogDao
 import com.santelocale.data.entity.FoodItem
@@ -28,18 +29,19 @@ abstract class HealthDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): HealthDatabase {
             return INSTANCE ?: synchronized(this) {
+                val appContext = context.applicationContext
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
+                    appContext,
                     HealthDatabase::class.java,
                     "sante_locale_database"
                 )
                     .addCallback(object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            // Prepopulate food items on first launch
+                            // Prepopulate food items on first launch from content.json
                             INSTANCE?.let { database ->
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    prepopulateFoodItems(database.foodItemDao())
+                                    loadFoodData(appContext, database)
                                 }
                             }
                         }
@@ -48,14 +50,6 @@ abstract class HealthDatabase : RoomDatabase() {
                 INSTANCE = instance
                 instance
             }
-        }
-
-        private suspend fun prepopulateFoodItems(foodDao: FoodItemDao) {
-            // Check if already populated
-            if (foodDao.getCount() > 0) return
-
-            // Use the centralized FoodData object which matches FOOD_DATABASE from mockup.md
-            foodDao.insertAll(com.santelocale.data.FoodData.getAllFoodItems())
         }
     }
 }
