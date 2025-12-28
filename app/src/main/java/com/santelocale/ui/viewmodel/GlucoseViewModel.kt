@@ -45,7 +45,7 @@ class GlucoseViewModel(
     /**
      * Delete the last character from input.
      */
-    fun deleteLast() {
+    fun deleteLastDigit() {
         val current = _inputValue.value
         if (current.isNotEmpty()) {
             _inputValue.value = current.dropLast(1)
@@ -62,8 +62,9 @@ class GlucoseViewModel(
     /**
      * Save the glucose reading to the database.
      * Converts comma to dot for storage, keeps comma for display.
+     * @param unit The glucose unit (e.g., "mg/dL" or "mmol/L") - stored for reference
      */
-    fun saveGlucose() {
+    fun saveGlucose(unit: String) {
         val displayValue = _inputValue.value
         if (displayValue.isEmpty()) return
 
@@ -76,7 +77,7 @@ class GlucoseViewModel(
                     type = "GLUCOSE",
                     value = numericValue,
                     displayValue = displayValue,
-                    label = null,
+                    label = unit, // Store the unit used for this reading
                     date = System.currentTimeMillis()
                 )
             )

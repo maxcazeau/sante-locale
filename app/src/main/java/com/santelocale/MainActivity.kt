@@ -13,6 +13,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.santelocale.data.UserPreferencesRepository
 import com.santelocale.data.database.HealthDatabase
 import com.santelocale.data.repository.HealthRepository
@@ -38,6 +41,18 @@ import com.santelocale.ui.viewmodel.SettingsViewModelFactory
 
 // DataStore for user settings (name and unit preference)
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+
+/**
+ * Navigation routes for the app.
+ */
+sealed class Screen(val route: String) {
+    object Dashboard : Screen("dashboard")
+    object Settings : Screen("settings")
+    object GlucoseInput : Screen("glucose")
+    object FoodGuide : Screen("food")
+    object ActivityInput : Screen("activity")
+    object History : Screen("history")
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,16 +85,15 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * Main app composable with navigation state management.
- * Matches React's view state management: dashboard, glucose, food, activity, history, settings
+ * Main app composable with Jetpack Navigation.
  */
 @Composable
 fun SanteLocaleApp(
     healthRepository: HealthRepository,
     userPreferencesRepository: UserPreferencesRepository
 ) {
-    // Navigation state
-    var currentScreen by remember { mutableStateOf("dashboard") }
+    // Navigation controller
+    val navController = rememberNavController()
 
     // User settings from repository
     val userName by userPreferencesRepository.userName.collectAsState(initial = "")
@@ -110,51 +124,55 @@ fun SanteLocaleApp(
         factory = HistoryViewModelFactory(healthRepository)
     )
 
-    // Navigation function
-    val navigate: (String) -> Unit = { destination ->
-        currentScreen = destination
-    }
-
-    // Render current screen based on navigation state
-    when (currentScreen) {
-        "dashboard" -> {
+    // Navigation Host
+    NavHost(
+        navController = navController,
+        startDestination = Screen.Dashboard.route
+    ) {
+        composable(Screen.Dashboard.route) {
             DashboardScreen(
                 viewModel = dashboardViewModel,
                 userName = userName,
                 unit = unit,
-                onNavigate = navigate
+                onNavigate = { destination -> navController.navigate(destination) }
             )
         }
-        "settings" -> {
+
+        composable(Screen.Settings.route) {
             SettingsScreen(
                 viewModel = settingsViewModel,
-                onBack = { navigate("dashboard") }
+                onBack = { navController.popBackStack() }
             )
         }
-        "glucose" -> {
+
+        composable(Screen.GlucoseInput.route) {
+            // GlucoseInputScreen with NavController
             GlucoseInputScreen(
+                navController = navController,
                 viewModel = glucoseViewModel,
-                unit = unit,
-                onBack = { navigate("dashboard") }
+                userUnit = unit  // Using real user unit from settings (defaults to "mg/dL")
             )
         }
-        "food" -> {
+
+        composable(Screen.FoodGuide.route) {
             FoodGuideScreen(
                 viewModel = foodViewModel,
-                onBack = { navigate("dashboard") }
+                onBack = { navController.popBackStack() }
             )
         }
-        "activity" -> {
+
+        composable(Screen.ActivityInput.route) {
             ActivityInputScreen(
                 viewModel = activityViewModel,
-                onBack = { navigate("dashboard") }
+                onBack = { navController.popBackStack() }
             )
         }
-        "history" -> {
+
+        composable(Screen.History.route) {
             HistoryScreen(
                 viewModel = historyViewModel,
                 unit = unit,
-                onBack = { navigate("dashboard") }
+                onBack = { navController.popBackStack() }
             )
         }
     }

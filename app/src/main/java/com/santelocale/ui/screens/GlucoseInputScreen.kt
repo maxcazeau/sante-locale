@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Backspace
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
@@ -19,37 +20,58 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.santelocale.ui.components.Header
+import androidx.navigation.NavController
 import com.santelocale.ui.theme.*
 import com.santelocale.ui.viewmodel.GlucoseViewModel
 
-// Additional colors for keypad
+// Colors for keypad
 private val Red500 = Color(0xFFEF4444)
 
 /**
  * Glucose Input screen with custom numeric keypad.
- * Matches the React GlucoseInput component design.
  * Uses comma (,) for decimal separator (French formatting).
+ *
+ * @param navController Navigation controller for back navigation
+ * @param viewModel GlucoseViewModel managing input state
+ * @param userUnit The user's preferred glucose unit (e.g., "mg/dL" or "mmol/L")
  */
 @Composable
 fun GlucoseInputScreen(
+    navController: NavController,
     viewModel: GlucoseViewModel,
-    unit: String,
-    onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    userUnit: String
 ) {
     val inputValue by viewModel.inputValue.collectAsState()
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Slate50)
     ) {
-        // Header with back button
-        Header(
-            title = "Nouvelle Glycémie",
-            onBack = onBack
-        )
+        // Header with Back button and title
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Emerald700)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Retour",
+                tint = White,
+                modifier = Modifier
+                    .size(28.dp)
+                    .clickable { navController.popBackStack() }
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = "Nouvelle Glycémie",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = White
+            )
+        }
 
         // Main content area
         Column(
@@ -58,19 +80,19 @@ fun GlucoseInputScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Display Area - shows current input value
+            // Display Card - shows current input value
             DisplayCard(
                 value = inputValue,
-                unit = unit
+                unit = userUnit
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Custom Keypad - 3x4 grid
             Keypad(
                 onDigit = { viewModel.appendDigit(it) },
                 onDecimal = { viewModel.appendDecimal() },
-                onDelete = { viewModel.deleteLast() },
+                onDelete = { viewModel.deleteLastDigit() },
                 modifier = Modifier.weight(1f)
             )
 
@@ -80,8 +102,8 @@ fun GlucoseInputScreen(
             SaveButton(
                 enabled = inputValue.isNotEmpty(),
                 onClick = {
-                    viewModel.saveGlucose()
-                    onBack()
+                    viewModel.saveGlucose(userUnit)
+                    navController.popBackStack()
                 }
             )
         }
@@ -89,8 +111,7 @@ fun GlucoseInputScreen(
 }
 
 /**
- * Display card showing the current input value.
- * Matches React: bg-white rounded-xl shadow-inner border-2 border-slate-200
+ * Display card showing the current input value in large text.
  */
 @Composable
 private fun DisplayCard(
@@ -98,59 +119,40 @@ private fun DisplayCard(
     unit: String,
     modifier: Modifier = Modifier
 ) {
-    Surface(
+    Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(128.dp),
-        shape = RoundedCornerShape(12.dp),
-        color = White,
-        shadowElevation = 2.dp,
-        tonalElevation = 0.dp
+            .height(140.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .border(
-                    width = 2.dp,
-                    color = Slate200,
-                    shape = RoundedCornerShape(12.dp)
-                )
                 .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Center
             ) {
-                // Label
+                // Large value display (60sp as requested)
                 Text(
-                    text = "Votre taux de sucre ?",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Slate500
+                    text = value.ifEmpty { "--" },
+                    fontSize = 60.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = if (value.isNotEmpty()) Slate800 else Slate300
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Value display
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = value.ifEmpty { "--" },
-                        fontSize = 48.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = if (value.isNotEmpty()) Slate900 else Slate300
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = unit,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Slate500,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
+                Spacer(modifier = Modifier.width(12.dp))
+                // Unit display
+                Text(
+                    text = unit,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Slate500,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
             }
         }
     }
@@ -209,18 +211,18 @@ private fun Keypad(
             modifier = Modifier.fillMaxWidth().weight(1f),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Decimal (comma) button - slightly different background
+            // Decimal (comma) button
             KeypadButton(
                 text = ",",
                 onClick = onDecimal,
-                backgroundColor = Slate50,
+                backgroundColor = Slate100,
                 modifier = Modifier.weight(1f)
             )
 
             // Zero button
             KeypadButton("0", onClick = { onDigit("0") }, modifier = Modifier.weight(1f))
 
-            // Delete button - red icon
+            // Delete button
             KeypadDeleteButton(
                 onClick = onDelete,
                 modifier = Modifier.weight(1f)
@@ -231,8 +233,6 @@ private fun Keypad(
 
 /**
  * Individual keypad button with press animation.
- * Matches React: bg-white text-slate-800 text-3xl font-bold rounded-xl
- * shadow-sm border-b-4 border-slate-200 active:border-b-0 active:translate-y-1
  */
 @Composable
 private fun KeypadButton(
@@ -244,7 +244,6 @@ private fun KeypadButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    // Simulate press effect with offset and border changes
     val verticalOffset = if (isPressed) 4.dp else 0.dp
     val bottomBorderWidth = if (isPressed) 0.dp else 4.dp
 
@@ -280,8 +279,7 @@ private fun KeypadButton(
 }
 
 /**
- * Delete button with backspace icon.
- * Matches React: bg-slate-100 text-red-500
+ * Delete button with backspace icon in red.
  */
 @Composable
 private fun KeypadDeleteButton(
@@ -326,8 +324,7 @@ private fun KeypadDeleteButton(
 }
 
 /**
- * Save button at the bottom.
- * Matches React: bg-emerald-600 when enabled, bg-slate-300 when disabled
+ * Save button - Emerald when enabled, Gray when disabled.
  */
 @Composable
 private fun SaveButton(
