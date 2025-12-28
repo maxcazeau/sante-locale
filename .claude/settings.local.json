@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Set up initial Android project with MainActivity and Dashboard\n\n- Create complete project structure for Santé Locale Android app\n- Implement Room database with HealthLog and FoodItem entities\n- Set up DAO layer with Flow-based reactive queries\n- Create HealthDatabase with singleton pattern\n- Add HealthRepository for offline-first data access\n- Implement DashboardViewModel with StateFlow\n- Configure Material 3 theme with exact colors from React mockup\n  - Emerald-700 (#047857) for header\n  - Blue-600 (#2563EB) for glucose button\n  - Orange-500 (#F97316) for activity button\n- Create reusable UI components (Header, BigButton)\n- Implement Dashboard screen matching React prototype\n- Add DataStore for settings persistence (user name, unit preference)\n- Configure navigation state management\n- Add all Gradle dependencies and Android manifest\n\nTech stack: Kotlin, Jetpack Compose, Room, Material 3, DataStore\nArchitecture: MVVM with Repository pattern\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(git push)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
