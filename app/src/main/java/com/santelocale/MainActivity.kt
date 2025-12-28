@@ -11,19 +11,30 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.santelocale.data.UserPreferencesRepository
 import com.santelocale.data.database.HealthDatabase
 import com.santelocale.data.repository.HealthRepository
+import com.santelocale.ui.screens.ActivityInputScreen
 import com.santelocale.ui.screens.DashboardScreen
+import com.santelocale.ui.screens.FoodGuideScreen
+import com.santelocale.ui.screens.GlucoseInputScreen
+import com.santelocale.ui.screens.HistoryScreen
+import com.santelocale.ui.screens.SettingsScreen
 import com.santelocale.ui.theme.SanteLocaleTheme
+import com.santelocale.ui.viewmodel.ActivityViewModel
+import com.santelocale.ui.viewmodel.ActivityViewModelFactory
 import com.santelocale.ui.viewmodel.DashboardViewModel
 import com.santelocale.ui.viewmodel.DashboardViewModelFactory
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import com.santelocale.ui.viewmodel.FoodViewModel
+import com.santelocale.ui.viewmodel.FoodViewModelFactory
+import com.santelocale.ui.viewmodel.GlucoseViewModel
+import com.santelocale.ui.viewmodel.GlucoseViewModelFactory
+import com.santelocale.ui.viewmodel.HistoryViewModel
+import com.santelocale.ui.viewmodel.HistoryViewModelFactory
+import com.santelocale.ui.viewmodel.SettingsViewModel
+import com.santelocale.ui.viewmodel.SettingsViewModelFactory
 
 // DataStore for user settings (name and unit preference)
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -45,9 +56,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // Create UserPreferencesRepository
+                    val userPreferencesRepository = UserPreferencesRepository(dataStore)
+
                     SanteLocaleApp(
-                        repository = repository,
-                        dataStore = dataStore
+                        healthRepository = repository,
+                        userPreferencesRepository = userPreferencesRepository
                     )
                 }
             }
@@ -61,24 +75,39 @@ class MainActivity : ComponentActivity() {
  */
 @Composable
 fun SanteLocaleApp(
-    repository: HealthRepository,
-    dataStore: DataStore<Preferences>
+    healthRepository: HealthRepository,
+    userPreferencesRepository: UserPreferencesRepository
 ) {
     // Navigation state
     var currentScreen by remember { mutableStateOf("dashboard") }
 
-    // User settings
-    val userName by dataStore.data.map { prefs ->
-        prefs[stringPreferencesKey("user_name")] ?: ""
-    }.collectAsState(initial = "")
+    // User settings from repository
+    val userName by userPreferencesRepository.userName.collectAsState(initial = "")
+    val unit by userPreferencesRepository.glucoseUnit.collectAsState(initial = "mg/dL")
 
-    val unit by dataStore.data.map { prefs ->
-        prefs[stringPreferencesKey("unit")] ?: "mg/dL"
-    }.collectAsState(initial = "mg/dL")
+    // ViewModels
+    val dashboardViewModel: DashboardViewModel = viewModel(
+        factory = DashboardViewModelFactory(healthRepository)
+    )
 
-    // ViewModel
-    val viewModel: DashboardViewModel = viewModel(
-        factory = DashboardViewModelFactory(repository)
+    val settingsViewModel: SettingsViewModel = viewModel(
+        factory = SettingsViewModelFactory(userPreferencesRepository, healthRepository)
+    )
+
+    val glucoseViewModel: GlucoseViewModel = viewModel(
+        factory = GlucoseViewModelFactory(healthRepository)
+    )
+
+    val foodViewModel: FoodViewModel = viewModel(
+        factory = FoodViewModelFactory(healthRepository)
+    )
+
+    val activityViewModel: ActivityViewModel = viewModel(
+        factory = ActivityViewModelFactory(healthRepository)
+    )
+
+    val historyViewModel: HistoryViewModel = viewModel(
+        factory = HistoryViewModelFactory(healthRepository)
     )
 
     // Navigation function
@@ -90,76 +119,43 @@ fun SanteLocaleApp(
     when (currentScreen) {
         "dashboard" -> {
             DashboardScreen(
-                viewModel = viewModel,
+                viewModel = dashboardViewModel,
                 userName = userName,
                 unit = unit,
                 onNavigate = navigate
             )
         }
         "settings" -> {
-            // TODO: Implement SettingsScreen
-            // For now, show placeholder
-            PlaceholderScreen(
-                screenName = "Settings",
+            SettingsScreen(
+                viewModel = settingsViewModel,
                 onBack = { navigate("dashboard") }
             )
         }
         "glucose" -> {
-            // TODO: Implement GlucoseInputScreen
-            PlaceholderScreen(
-                screenName = "Glucose Input",
+            GlucoseInputScreen(
+                viewModel = glucoseViewModel,
+                unit = unit,
                 onBack = { navigate("dashboard") }
             )
         }
         "food" -> {
-            // TODO: Implement FoodGuideScreen
-            PlaceholderScreen(
-                screenName = "Food Guide",
+            FoodGuideScreen(
+                viewModel = foodViewModel,
                 onBack = { navigate("dashboard") }
             )
         }
         "activity" -> {
-            // TODO: Implement ActivityInputScreen
-            PlaceholderScreen(
-                screenName = "Activity Input",
+            ActivityInputScreen(
+                viewModel = activityViewModel,
                 onBack = { navigate("dashboard") }
             )
         }
         "history" -> {
-            // TODO: Implement HistoryScreen
-            PlaceholderScreen(
-                screenName = "History",
+            HistoryScreen(
+                viewModel = historyViewModel,
+                unit = unit,
                 onBack = { navigate("dashboard") }
             )
-        }
-    }
-}
-
-/**
- * Temporary placeholder for unimplemented screens
- */
-@Composable
-fun PlaceholderScreen(
-    screenName: String,
-    onBack: () -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        androidx.compose.foundation.layout.Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
-        ) {
-            androidx.compose.material3.Text(
-                text = "$screenName Screen",
-                style = MaterialTheme.typography.titleLarge
-            )
-            androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(16.dp))
-            androidx.compose.material3.Button(onClick = onBack) {
-                androidx.compose.material3.Text("Retour")
-            }
         }
     }
 }
