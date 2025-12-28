@@ -63,13 +63,17 @@ class GlucoseViewModel(
      * Save the glucose reading to the database.
      * Converts comma to dot for storage, keeps comma for display.
      * @param unit The glucose unit (e.g., "mg/dL" or "mmol/L") - stored for reference
+     * @param context The context of the reading (e.g., "Avant repas", "Après repas")
      */
-    fun saveGlucose(unit: String) {
+    fun saveGlucose(unit: String, context: String? = null) {
         val displayValue = _inputValue.value
         if (displayValue.isEmpty()) return
 
         // Convert comma to dot for numeric parsing
         val numericValue = displayValue.replace(",", ".").toFloatOrNull() ?: return
+
+        // Construct label with context if provided
+        val finalLabel = if (context != null) "$unit • $context" else unit
 
         viewModelScope.launch {
             repository.insertLog(
@@ -77,7 +81,7 @@ class GlucoseViewModel(
                     type = "GLUCOSE",
                     value = numericValue,
                     displayValue = displayValue,
-                    label = unit, // Store the unit used for this reading
+                    label = finalLabel, // Store the unit and context
                     date = System.currentTimeMillis()
                 )
             )
