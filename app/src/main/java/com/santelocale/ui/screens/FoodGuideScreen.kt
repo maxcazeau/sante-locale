@@ -1,7 +1,6 @@
 package com.santelocale.ui.screens
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,32 +11,45 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material3.*
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.santelocale.data.entity.FoodItem
-import com.santelocale.ui.components.Header
+import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.FoodViewModel
 
-// Colors
+// Colors - Updated for semantic themes
+private val Emerald100 = Color(0xFFD1FAE5)
 private val Emerald600 = Color(0xFF059669)
-private val Yellow600 = Color(0xFFCA8A04)
-private val Red600 = Color(0xFFDC2626)
+private val Emerald700 = Color(0xFF047857)
+
+private val Orange50 = Color(0xFFFFF7ED)
+private val Orange100 = Color(0xFFFFEDD5)
+private val Orange500 = Color(0xFFF97316)
+private val Orange700 = Color(0xFFC2410C)
+
+private val Red50 = Color(0xFFFEF2F2)
+private val Red100 = Color(0xFFFEE2E2)
+private val Red500 = Color(0xFFEF4444)
+private val Red700 = Color(0xFFB91C1C)
+
 private val Slate50 = Color(0xFFF8FAFC)
+private val Slate400 = Color(0xFF94A3B8)
+private val Slate800 = Color(0xFF1E293B)
 private val Amber500 = Color(0xFFF59E0B)
 
 /**
- * Food Guide screen with ScrollableTabRow and row-based card layout.
+ * Food Guide screen with pill-style tab switcher and clean card list.
  */
 @Composable
 fun FoodGuideScreen(
@@ -48,129 +60,147 @@ fun FoodGuideScreen(
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val foods by viewModel.foods.collectAsState()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Slate50)
+    CurvedScreenWrapper(
+        title = "Guide Alimentaire",
+        onBack = onBack
     ) {
-        // Header
-        Header(title = "Guide Alimentaire", onBack = onBack)
-
-        // ScrollableTabRow prevents "MODÉRÉMENT" from cutting off
-        ScrollableTabRow(
-            selectedTabIndex = when (selectedCategory) {
-                "VERT" -> 0
-                "JAUNE" -> 1
-                else -> 2
-            },
-            containerColor = Color.White,
-            contentColor = Color.Black,
-            edgePadding = 0.dp,
-            divider = {},
-            indicator = { tabPositions ->
-                val selectedIndex = when (selectedCategory) {
-                    "VERT" -> 0
-                    "JAUNE" -> 1
-                    else -> 2
-                }
-                val indicatorColor = when (selectedCategory) {
-                    "VERT" -> Emerald600
-                    "JAUNE" -> Yellow600
-                    else -> Red600
-                }
-                Box(
-                    Modifier
-                        .tabIndicatorOffset(tabPositions[selectedIndex])
-                        .fillMaxWidth()
-                        .height(3.dp)
-                        .background(indicatorColor)
-                )
-            }
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            FoodTab("À VOLONTÉ", selectedCategory == "VERT", Emerald600) {
-                viewModel.selectCategory("VERT")
+            // Pill Switcher - Using Surface for pure white
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
+                shape = RoundedCornerShape(24.dp),
+                color = Color.White,
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Tab 1: À VOLONTÉ (Green)
+                    PillTab(
+                        text = "À VOLONTÉ",
+                        isSelected = selectedCategory == "VERT",
+                        activeBackgroundColor = Emerald100,
+                        activeTextColor = Emerald700,
+                        onClick = { viewModel.selectCategory("VERT") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    // Tab 2: MODÉRÉMENT (Orange)
+                    PillTab(
+                        text = "MODÉRÉMENT",
+                        isSelected = selectedCategory == "JAUNE",
+                        activeBackgroundColor = Orange100,
+                        activeTextColor = Orange700,
+                        onClick = { viewModel.selectCategory("JAUNE") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    // Tab 3: À ÉVITER (Red)
+                    PillTab(
+                        text = "À ÉVITER",
+                        isSelected = selectedCategory == "ROUGE",
+                        activeBackgroundColor = Red100,
+                        activeTextColor = Red700,
+                        onClick = { viewModel.selectCategory("ROUGE") },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
-            FoodTab("MODÉRÉMENT", selectedCategory == "JAUNE", Yellow600) {
-                viewModel.selectCategory("JAUNE")
-            }
-            FoodTab("À ÉVITER", selectedCategory == "ROUGE", Red600) {
-                viewModel.selectCategory("ROUGE")
-            }
-        }
 
-        // Food List
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(foods, key = { it.id }) { food ->
-                FoodCardRow(food = food)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Food List
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(foods, key = { it.id }) { food ->
+                    FoodCard(food = food)
+                }
             }
         }
     }
 }
 
 /**
- * Tab component for category selection.
+ * Pill-style tab button.
+ * Selected: Custom bg/text, ExtraBold
+ * Unselected: Transparent bg, Slate400 text, Bold
  */
 @Composable
-private fun FoodTab(
+private fun PillTab(
     text: String,
     isSelected: Boolean,
-    color: Color,
-    onClick: () -> Unit
+    activeBackgroundColor: Color,
+    activeTextColor: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Tab(
-        selected = isSelected,
-        onClick = onClick,
-        text = {
-            Text(
-                text = text,
-                color = if (isSelected) color else Color.Gray,
-                fontWeight = FontWeight.Bold,
-                fontSize = 13.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    )
+    val backgroundColor = if (isSelected) activeBackgroundColor else Color.Transparent
+    val textColor = if (isSelected) activeTextColor else Slate400
+    val fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold
+
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .clip(RoundedCornerShape(16.dp))
+            .background(backgroundColor)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            fontSize = 11.sp,
+            fontWeight = fontWeight,
+            color = textColor,
+            textAlign = TextAlign.Center,
+            maxLines = 1
+        )
+    }
 }
 
 /**
- * Row-based food card with image on left, text on right.
- * Expands to show health tip when clicked.
+ * Food card with clean shadow (no border).
+ * White Card, RoundedCornerShape(24.dp), elevation 2dp.
+ * Image: 80dp square, RoundedCornerShape(16.dp).
  */
 @Composable
-private fun FoodCardRow(food: FoodItem) {
+private fun FoodCard(food: FoodItem) {
     var expanded by remember { mutableStateOf(false) }
 
-    // Determine border color based on category
-    val categoryColor = when (food.category) {
-        "VERT" -> Emerald600
-        "JAUNE" -> Yellow600
-        "ROUGE" -> Red600
-        else -> Color.Gray
+    // Category colors
+    val (categoryColor, tipBackgroundColor) = when (food.category) {
+        "VERT" -> Emerald600 to Slate50
+        "JAUNE" -> Orange500 to Orange50
+        "ROUGE" -> Red500 to Red50
+        else -> Color.Gray to Slate50
     }
 
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { expanded = !expanded }
             .animateContentSize(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(2.dp),
-        border = if (expanded) BorderStroke(2.dp, categoryColor) else null
+        shape = RoundedCornerShape(24.dp),
+        color = Color.White,
+        shadowElevation = 1.dp
     ) {
         Column {
             Row(
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Image Box (Left Side)
+                // Image: 80dp square, RoundedCornerShape(16.dp)
                 Surface(
                     modifier = Modifier.size(80.dp),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(16.dp),
                     color = categoryColor.copy(alpha = 0.1f)
                 ) {
                     SubcomposeAsyncImage(
@@ -180,6 +210,7 @@ private fun FoodCardRow(food: FoodItem) {
                             .build(),
                         contentDescription = food.name,
                         contentScale = ContentScale.Crop,
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp)),
                         loading = {
                             Box(contentAlignment = Alignment.Center) {
                                 CircularProgressIndicator(
@@ -189,12 +220,12 @@ private fun FoodCardRow(food: FoodItem) {
                             }
                         },
                         error = {
-                            // Fallback Icon when offline/broken URL
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     Icons.Default.Image,
                                     contentDescription = null,
-                                    tint = categoryColor.copy(alpha = 0.5f)
+                                    tint = categoryColor.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(32.dp)
                                 )
                             }
                         }
@@ -203,15 +234,15 @@ private fun FoodCardRow(food: FoodItem) {
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                // Text Content (Right Side)
+                // Text Content
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = food.name,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = Slate800
                     )
-                    // Mini-badge for category
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = when (food.category) {
                             "VERT" -> "Bon pour la santé"
@@ -229,7 +260,8 @@ private fun FoodCardRow(food: FoodItem) {
             // Expanded Tip Section
             if (expanded) {
                 Surface(
-                    color = Slate50,
+                    color = tipBackgroundColor,
+                    shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
