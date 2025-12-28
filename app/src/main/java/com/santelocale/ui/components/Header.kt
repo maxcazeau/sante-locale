@@ -36,7 +36,7 @@ fun Header(
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = Emerald700,
-        shadowElevation = 4.dp
+        shadowElevation = 1.dp
     ) {
         Row(
             modifier = Modifier

@@ -50,8 +50,8 @@ fun BigButton(
         ),
         shape = RoundedCornerShape(16.dp),
         elevation = ButtonDefaults.buttonElevation(
-            defaultElevation = 8.dp,
-            pressedElevation = 2.dp
+            defaultElevation = 2.dp,
+            pressedElevation = 0.dp
         ),
         contentPadding = PaddingValues(20.dp)
     ) {
