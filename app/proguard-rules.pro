@@ -7,5 +7,19 @@
 -keep @androidx.room.Entity class *
 -dontwarn androidx.room.paging.**
 
-# Keep Kotlin metadata
+# Coil (Image Loading)
+-keep class coil.** { *; }
+-dontwarn coil.**
+
+# WorkManager (Reminders)
+-keep class androidx.work.** { *; }
+
+# Gson (JSON Parsing)
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
+-keep class com.santelocale.data.** { *; } # Keep data models used with Gson
+
+# Kotlin Metadata
 -keep class kotlin.Metadata { *; }
