@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.santelocale.R
 import com.santelocale.data.entity.HealthLog
 import com.santelocale.data.entity.getGlucoseStatusDisplay
 import com.santelocale.ui.viewmodel.DashboardViewModel
@@ -94,7 +96,7 @@ fun DashboardScreen(
                     .offset(y = (-24).dp)
             ) {
                 Text(
-                    text = "Actions Rapides",
+                    text = stringResource(R.string.label_quick_actions),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Slate400,
@@ -115,7 +117,7 @@ fun DashboardScreen(
                 ) {
                     ActionCard(
                         icon = Icons.Rounded.Restaurant,
-                        label = "Manger",
+                        label = stringResource(R.string.action_food),
                         iconTint = Emerald600,
                         hoverColor = Emerald100,
                         onClick = { onNavigate("food") },
@@ -124,7 +126,7 @@ fun DashboardScreen(
 
                     ActionCard(
                         icon = Icons.Rounded.DirectionsRun,
-                        label = "Bouger",
+                        label = stringResource(R.string.action_activity),
                         iconTint = Orange500,
                         hoverColor = Orange50,
                         onClick = { onNavigate("activity") },
@@ -184,7 +186,7 @@ private fun CurvedHeader(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "Hors Ligne",
+                            text = stringResource(R.string.offline_badge),
                             color = Color.White,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold
@@ -201,7 +203,7 @@ private fun CurvedHeader(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Settings,
-                        contentDescription = "Paramètres",
+                        contentDescription = stringResource(R.string.cd_settings),
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
@@ -212,7 +214,7 @@ private fun CurvedHeader(
 
             // Welcome Text
             Text(
-                text = if (userName.isNotEmpty()) "Bonjour, $userName 👋" else "Bonjour 👋",
+                text = if (userName.isNotEmpty()) stringResource(R.string.greeting_user, userName) else stringResource(R.string.greeting_default),
                 color = Color.White.copy(alpha = 0.9f),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium
@@ -221,7 +223,7 @@ private fun CurvedHeader(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Santé Locale",
+                text = stringResource(R.string.app_name),
                 color = Color.White,
                 fontSize = 36.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -257,7 +259,7 @@ private fun StatusCard(
         ) {
             Column {
                 Text(
-                    text = "DERNIÈRE MESURE",
+                    text = stringResource(R.string.label_last_measure),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = Slate400,
@@ -310,7 +312,7 @@ private fun StatusCard(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Aucune donnée",
+                        text = stringResource(R.string.label_no_data),
                         fontSize = 14.sp,
                         color = Slate400
                     )
@@ -328,7 +330,7 @@ private fun StatusCard(
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Rounded.History,
-                        contentDescription = "Historique",
+                        contentDescription = stringResource(R.string.cd_history),
                         tint = Emerald600,
                         modifier = Modifier.size(28.dp)
                     )
@@ -390,13 +392,13 @@ private fun GlucoseButton(
 
                 Column {
                     Text(
-                        text = "Ma Glycémie",
+                        text = stringResource(R.string.action_glucose_title),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
-                        text = "Saisir mon taux",
+                        text = stringResource(R.string.action_glucose_subtitle),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Blue100

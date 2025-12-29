@@ -19,9 +19,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.santelocale.R
 import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.GlucoseViewModel
 
@@ -48,12 +50,32 @@ fun GlucoseInputScreen(
     val inputValue by viewModel.inputValue.collectAsState()
     var selectedContext by remember { mutableStateOf<String?>(null) } // "Avant repas" or "Après repas"
 
-    // Keypad items: digits 1-9, comma, 0, delete
-    val keypadItems = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "⌫")
+    // Memoize keypad items
+    val keypadItems = remember { listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "⌫") }
+
+    // Memoize callbacks
+    val onBackClick = remember(navController) { { navController.popBackStack() } }
+    
+    val onSaveClick = remember(viewModel, inputValue, userUnit, selectedContext, navController) {
+        {
+            viewModel.saveGlucose(userUnit, selectedContext)
+            navController.popBackStack()
+        }
+    }
+    
+    val onKeypadClick: (String) -> Unit = remember(viewModel) {
+        { item ->
+            when (item) {
+                "⌫" -> viewModel.deleteLastDigit()
+                "," -> viewModel.appendDecimal()
+                else -> viewModel.appendDigit(item)
+            }
+        }
+    }
 
     CurvedScreenWrapper(
-        title = "Nouvelle Glycémie",
-        onBack = { navController.popBackStack() }
+        title = stringResource(R.string.title_new_glucose),
+        onBack = { onBackClick() } // Lambda wrapper needed if CurvedScreenWrapper expects () -> Unit directly
     ) {
         Column(
             modifier = Modifier
@@ -78,7 +100,7 @@ fun GlucoseInputScreen(
                 ) {
                     // Label: 'VOTRE TAUX'
                     Text(
-                        text = "VOTRE TAUX",
+                        text = stringResource(R.string.label_your_rate),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 2.sp,
@@ -118,14 +140,14 @@ fun GlucoseInputScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         ContextToggleButton(
-                            text = "Avant repas",
+                            text = stringResource(R.string.context_before_meal),
                             isSelected = selectedContext == "Avant repas",
                             onClick = { selectedContext = if (selectedContext == "Avant repas") null else "Avant repas" },
                             modifier = Modifier.weight(1f)
                         )
 
                         ContextToggleButton(
-                            text = "Après repas",
+                            text = stringResource(R.string.context_after_meal),
                             isSelected = selectedContext == "Après repas",
                             onClick = { selectedContext = if (selectedContext == "Après repas") null else "Après repas" },
                             modifier = Modifier.weight(1f)
@@ -148,23 +170,14 @@ fun GlucoseInputScreen(
                     KeypadButton(
                         text = item,
                         isDelete = item == "⌫",
-                        onClick = {
-                            when (item) {
-                                "⌫" -> viewModel.deleteLastDigit()
-                                "," -> viewModel.appendDecimal()
-                                else -> viewModel.appendDigit(item)
-                            }
-                        }
+                        onClick = { onKeypadClick(item) }
                     )
                 }
             }
 
             // Save Button
             Button(
-                onClick = {
-                    viewModel.saveGlucose(userUnit, selectedContext)
-                    navController.popBackStack()
-                },
+                onClick = { onSaveClick() },
                 enabled = inputValue.isNotEmpty(),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -195,7 +208,7 @@ fun GlucoseInputScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "ENREGISTRER",
+                        text = stringResource(R.string.btn_save),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
@@ -273,7 +286,7 @@ private fun KeypadButton(
             if (isDelete) {
                 Icon(
                     imageVector = Icons.Rounded.Backspace,
-                    contentDescription = "Supprimer",
+                    contentDescription = stringResource(R.string.cd_delete_digit),
                     tint = Red500,
                     modifier = Modifier.size(28.dp)
                 )

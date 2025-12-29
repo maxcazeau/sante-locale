@@ -1,4 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Santé Locale</string>
+
+    <!-- Dashboard -->
+    <string name="greeting_user">Bonjour, %1$s 👋</string>
+    <string name="greeting_default">Bonjour 👋</string>
+    <string name="offline_badge">Hors Ligne</string>
+    <string name="cd_settings">Paramètres</string>
+    <string name="cd_history">Historique</string>
+    <string name="label_last_measure">DERNIÈRE MESURE</string>
+    <string name="label_no_data">Aucune donnée</string>
+    <string name="label_quick_actions">Actions Rapides</string>
+    <string name="action_glucose_title">Ma Glycémie</string>
+    <string name="action_glucose_subtitle">Saisir mon taux</string>
+    <string name="action_food">Manger</string>
+    <string name="action_activity">Bouger</string>
+
+    <!-- Glucose Input -->
+    <string name="title_new_glucose">Nouvelle Glycémie</string>
+    <string name="label_your_rate">VOTRE TAUX</string>
+    <string name="context_before_meal">Avant repas</string>
+    <string name="context_after_meal">Après repas</string>
+    <string name="btn_save">ENREGISTRER</string>
+    <string name="cd_delete_digit">Supprimer</string>
+    <string name="btn_save_normal">Enregistrer</string>
+
+    <!-- Settings General -->
+    <string name="settings_title">Paramètres</string>
+    <string name="settings_profile">Profil</string>
+    <string name="settings_notifications">Rappels</string>
+    <string name="settings_privacy">Confidentialité</string>
+    <string name="settings_language">Langue</string>
+    <string name="btn_back">Retour</string>
+    
+    <!-- Settings Menu -->
+    <string name="section_general">GÉNÉRAL</string>
+    <string name="section_security">SÉCURITÉ</string>
+    <string name="menu_profile_title">Profil &amp; Compte</string>
+    <string name="menu_profile_subtitle">Nom, Unité de glycémie</string>
+    <string name="menu_notif_title">Notifications</string>
+    <string name="menu_notif_subtitle">Rappels quotidiens</string>
+    <string name="menu_privacy_title">Confidentialité &amp; Données</string>
+    <string name="menu_privacy_subtitle">Gérer vos données</string>
+    <string name="cd_open_settings">Ouvrir les paramètres de %1$s</string>
+
+    <!-- Settings Account -->
+    <string name="label_your_name">VOTRE NOM</string>
+    <string name="hint_name">Ex: Papa</string>
+    <string name="label_glucose_unit">UNITÉ DE GLYCÉMIE</string>
+    <string name="hint_unit_haiti">mg/dL est le standard en Haïti.</string>
+    <string name="cd_unit_selected">Unité %1$s sélectionnée</string>
+    <string name="cd_select_unit">Sélectionner unité %1$s</string>
+
+    <!-- Settings Notifications -->
+    <string name="label_daily_reminders">RAPPELS QUOTIDIENS</string>
+    <string name="reminder_morning_title">Matin (A jeun)</string>
+    <string name="reminder_morning_notif_title">Bonjour !</string>
+    <string name="reminder_morning_notif_text">N\'oubliez pas votre glycémie à jeun.</string>
+    <string name="reminder_evening_title">Soir (Après repas)</string>
+    <string name="reminder_evening_notif_title">Bonsoir !</string>
+    <string name="reminder_evening_notif_text">Avez-vous vérifié votre glycémie après le repas ?</string>
+    <string name="cd_state_on">Activé</string>
+    <string name="cd_state_off">Désactivé</string>
+
+    <!-- Settings Privacy -->
+    <string name="privacy_manage_title">Gestion des données</string>
+    <string name="privacy_manage_desc">Toutes vos données sont stockées localement sur votre téléphone.</string>
+    <string name="label_danger_zone">ZONE DANGER</string>
+    <string name="btn_clear_data">Effacer toutes les données</string>
+    <string name="dialog_clear_title">Attention</string>
+    <string name="dialog_clear_msg">Voulez-vous vraiment effacer tout l\'historique ? Cette action est irréversible.</string>
+    <string name="btn_clear_confirm">Effacer</string>
+    <string name="btn_cancel">Annuler</string>
+
+    <!-- Settings Language -->
+    <string name="label_app_language">LANGUE DE L\'APPLICATION</string>
 </resources>

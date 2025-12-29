@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.santelocale.R
 import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.SettingsViewModel
 import com.santelocale.utils.ReminderScheduler
@@ -96,11 +98,11 @@ fun SettingsScreen(
 
     CurvedScreenWrapper(
         title = when (currentRoute) {
-            SettingsRoute.Menu -> "Paramètres"
-            SettingsRoute.Account -> "Profil"
-            SettingsRoute.Notifications -> "Rappels"
-            SettingsRoute.Privacy -> "Confidentialité"
-            SettingsRoute.Language -> "Langue"
+            SettingsRoute.Menu -> stringResource(R.string.settings_title)
+            SettingsRoute.Account -> stringResource(R.string.settings_profile)
+            SettingsRoute.Notifications -> stringResource(R.string.settings_notifications)
+            SettingsRoute.Privacy -> stringResource(R.string.settings_privacy)
+            SettingsRoute.Language -> stringResource(R.string.settings_language)
         },
         onBack = handleBack
     ) {
@@ -159,40 +161,40 @@ private fun SettingsMenu(
             .verticalScroll(rememberScrollState())
             .padding(vertical = 16.dp)
     ) {
-        SectionTitle("GÉNÉRAL")
+        SectionTitle(stringResource(R.string.section_general))
 
         SettingsMenuItem(
             icon = Icons.Rounded.Person,
             iconColor = Emerald600,
-            title = "Profil & Compte",
-            subtitle = "Nom, Unité de glycémie",
+            title = stringResource(R.string.menu_profile_title),
+            subtitle = stringResource(R.string.menu_profile_subtitle),
             onClick = { onNavigate(SettingsRoute.Account) }
         )
 
         SettingsMenuItem(
             icon = Icons.Rounded.Notifications,
             iconColor = Orange500,
-            title = "Notifications",
-            subtitle = "Rappels quotidiens",
+            title = stringResource(R.string.menu_notif_title),
+            subtitle = stringResource(R.string.menu_notif_subtitle),
             onClick = { onNavigate(SettingsRoute.Notifications) }
         )
 
         SettingsMenuItem(
             icon = Icons.Rounded.Language,
             iconColor = Blue600,
-            title = "Langue",
-            subtitle = "Français (HT)",
+            title = stringResource(R.string.settings_language),
+            subtitle = "Français (HT)", // Language name usually stays in its own language
             onClick = { onNavigate(SettingsRoute.Language) }
         )
 
         Spacer(modifier = Modifier.height(32.dp))
-        SectionTitle("SÉCURITÉ")
+        SectionTitle(stringResource(R.string.section_security))
 
         SettingsMenuItem(
             icon = Icons.Rounded.Lock,
             iconColor = Red500,
-            title = "Confidentialité & Données",
-            subtitle = "Gérer vos données",
+            title = stringResource(R.string.menu_privacy_title),
+            subtitle = stringResource(R.string.menu_privacy_subtitle),
             onClick = { onNavigate(SettingsRoute.Privacy) }
         )
     }
@@ -217,13 +219,13 @@ private fun AccountSettings(
         verticalArrangement = Arrangement.spacedBy(24.dp) // Spacing handled here
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            InputLabel("VOTRE NOM")
+            InputLabel(stringResource(R.string.label_your_name))
             
             TextField(
                 value = nameInput,
                 onValueChange = { nameInput = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Ex: Papa", color = Slate400) },
+                placeholder = { Text(stringResource(R.string.hint_name), color = Slate400) },
                 colors = TextFieldDefaults.colors(
                     unfocusedContainerColor = Slate50,
                     focusedContainerColor = Slate50,
@@ -237,7 +239,7 @@ private fun AccountSettings(
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            InputLabel("UNITÉ DE GLYCÉMIE")
+            InputLabel(stringResource(R.string.label_glucose_unit))
             
             UnitSwitcher(
                 options = listOf("mg/dL", "mmol/L"),
@@ -246,7 +248,7 @@ private fun AccountSettings(
             )
             
             Text(
-                text = "mg/dL est le standard en Haïti.",
+                text = stringResource(R.string.hint_unit_haiti),
                 fontSize = 12.sp,
                 color = Slate400
             )
@@ -255,7 +257,7 @@ private fun AccountSettings(
         Spacer(modifier = Modifier.height(8.dp)) // Extra visual separation before button
 
         PrimaryButton(
-            text = "Enregistrer",
+            text = stringResource(R.string.btn_save_normal),
             onClick = {
                 viewModel.updateName(nameInput)
                 viewModel.toggleUnit(selectedUnit)
@@ -294,11 +296,11 @@ private fun NotificationSettings(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        InputLabel("RAPPELS QUOTIDIENS")
+        InputLabel(stringResource(R.string.label_daily_reminders))
         
         Column {
             SwitchRow(
-                title = "Matin (A jeun)",
+                title = stringResource(R.string.reminder_morning_title),
                 subtitle = "07:00 AM",
                 checked = morningReminder,
                 onCheckedChange = { enabled ->
@@ -315,7 +317,7 @@ private fun NotificationSettings(
             Divider(color = Slate100, thickness = 1.dp)
             
             SwitchRow(
-                title = "Soir (Après repas)",
+                title = stringResource(R.string.reminder_evening_title),
                 subtitle = "08:00 PM",
                 checked = eveningReminder,
                 onCheckedChange = { enabled ->
@@ -333,7 +335,7 @@ private fun NotificationSettings(
         Spacer(modifier = Modifier.height(8.dp))
 
         PrimaryButton(
-            text = "Retour",
+            text = stringResource(R.string.btn_back),
             onClick = onBack
         )
     }
@@ -355,14 +357,14 @@ private fun PrivacySettings(
     ) {
         Column {
             Text(
-                text = "Gestion des données",
+                text = stringResource(R.string.privacy_manage_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Slate800
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Toutes vos données sont stockées localement sur votre téléphone.",
+                text = stringResource(R.string.privacy_manage_desc),
                 fontSize = 14.sp,
                 color = Slate600,
                 lineHeight = 20.sp
@@ -372,7 +374,7 @@ private fun PrivacySettings(
         Spacer(modifier = Modifier.height(24.dp))
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            InputLabel("ZONE DANGER", color = Red500)
+            InputLabel(stringResource(R.string.label_danger_zone), color = Red500)
             
             Button(
                 onClick = { showClearDialog = true },
@@ -389,7 +391,7 @@ private fun PrivacySettings(
             ) {
                 Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Effacer toutes les données", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.btn_clear_data), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
         }
         
@@ -397,8 +399,8 @@ private fun PrivacySettings(
         if (showClearDialog) {
             AlertDialog(
                 onDismissRequest = { showClearDialog = false },
-                title = { Text("Attention", fontWeight = FontWeight.Bold) },
-                text = { Text("Voulez-vous vraiment effacer tout l'historique ? Cette action est irréversible.") },
+                title = { Text(stringResource(R.string.dialog_clear_title), fontWeight = FontWeight.Bold) },
+                text = { Text(stringResource(R.string.dialog_clear_msg)) },
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -408,11 +410,11 @@ private fun PrivacySettings(
                         },
                         colors = ButtonDefaults.textButtonColors(contentColor = Red500)
                     ) {
-                        Text("Effacer", fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.btn_clear_confirm), fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showClearDialog = false }) { Text("Annuler") }
+                    TextButton(onClick = { showClearDialog = false }) { Text(stringResource(R.string.btn_cancel)) }
                 }
             )
         }
@@ -433,7 +435,7 @@ private fun LanguageSettings(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        InputLabel("LANGUE DE L'APPLICATION")
+        InputLabel(stringResource(R.string.label_app_language))
 
         Column {
             languages.forEach { language ->
@@ -470,7 +472,7 @@ private fun LanguageSettings(
         Spacer(modifier = Modifier.height(16.dp))
 
         PrimaryButton(
-            text = "Enregistrer",
+            text = stringResource(R.string.btn_save_normal),
             onClick = onBack
         )
     }
@@ -510,6 +512,7 @@ private fun SettingsMenuItem(
     subtitle: String,
     onClick: () -> Unit
 ) {
+    val cdText = stringResource(R.string.cd_open_settings, title)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -517,7 +520,7 @@ private fun SettingsMenuItem(
             .padding(horizontal = 24.dp, vertical = 16.dp)
             .semantics {
                 role = Role.Button
-                contentDescription = "Ouvrir les paramètres de $title"
+                contentDescription = cdText
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -570,12 +573,14 @@ private fun SwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val stateOn = stringResource(R.string.cd_state_on)
+    val stateOff = stringResource(R.string.cd_state_off)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp)
             .semantics {
-                stateDescription = if (checked) "Activé" else "Désactivé"
+                stateDescription = if (checked) stateOn else stateOff
             },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -649,6 +654,7 @@ private fun UnitSwitcher(
             options.forEach { option ->
                 val isSelected = option == selectedOption
                 if (isSelected) {
+                    val cdSelected = stringResource(R.string.cd_unit_selected, option)
                     Surface(
                         modifier = Modifier
                             .weight(1f)
@@ -657,7 +663,7 @@ private fun UnitSwitcher(
                             .semantics {
                                 role = Role.RadioButton
                                 selected = true
-                                contentDescription = "Unité $option sélectionnée"
+                                contentDescription = cdSelected
                             },
                         shape = RoundedCornerShape(50),
                         color = Color.White,
@@ -668,6 +674,7 @@ private fun UnitSwitcher(
                         }
                     }
                 } else {
+                    val cdSelect = stringResource(R.string.cd_select_unit, option)
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -677,7 +684,7 @@ private fun UnitSwitcher(
                             .semantics {
                                 role = Role.RadioButton
                                 selected = false
-                                contentDescription = "Sélectionner unité $option"
+                                contentDescription = cdSelect
                             },
                         contentAlignment = Alignment.Center
                     ) {
