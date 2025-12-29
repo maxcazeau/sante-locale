@@ -33,22 +33,19 @@ import com.santelocale.data.entity.HealthLog
 import com.santelocale.data.entity.getGlucoseStatusDisplay
 import com.santelocale.ui.viewmodel.DashboardViewModel
 
-// Colors
-private val Emerald600 = Color(0xFF059669)
-private val Emerald700 = Color(0xFF047857)
-private val Emerald100 = Color(0xFFD1FAE5)
-private val Blue600 = Color(0xFF2563EB)
-private val Blue700 = Color(0xFF1D4ED8)
-private val Blue100 = Color(0xFFDBEAFE)
+// Colors - New teal/green harmony palette
+private val PrimaryGreen = Color(0xFF0E7C66)    // Header, primary actions
+private val AccentTeal = Color(0xFF1BA6A6)      // CTA gradient start
+private val TealLight = Color(0xFFB2DFDB)       // Teal subtitle tint
 private val Orange500 = Color(0xFFF97316)
 private val Orange50 = Color(0xFFFFF7ED)
-private val Slate50 = Color(0xFFF8FAFC)
+private val Slate50 = Color(0xFFF4F6F7)         // Updated background
 private val Slate100 = Color(0xFFF1F5F9)
 private val Slate400 = Color(0xFF94A3B8)
 private val Slate700 = Color(0xFF334155)
 private val Slate800 = Color(0xFF1E293B)
-private val Green100 = Color(0xFFDCFCE7)
-private val Green700 = Color(0xFF15803D)
+private val TealStatus = Color(0xFFE0F2F1)    // Light teal for status pill bg
+private val TealStatusText = Color(0xFF0E7C66) // Primary green for status text
 
 /**
  * Enhanced Dashboard screen with curved header and overlapping status card.
@@ -118,8 +115,8 @@ fun DashboardScreen(
                     ActionCard(
                         icon = Icons.Rounded.Restaurant,
                         label = stringResource(R.string.action_food),
-                        iconTint = Emerald600,
-                        hoverColor = Emerald100,
+                        iconTint = AccentTeal,
+                        hoverColor = TealStatus,
                         onClick = { onNavigate("food") },
                         modifier = Modifier.weight(1f)
                     )
@@ -157,7 +154,7 @@ private fun CurvedHeader(
             .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Emerald600, Emerald700)
+                    colors = listOf(AccentTeal, PrimaryGreen)
                 )
             )
             .padding(24.dp)
@@ -292,12 +289,12 @@ private fun StatusCard(
                     // Status pill
                     val statusText = lastLog.getGlucoseStatusDisplay(unit)
                     Surface(
-                        color = Green100,
+                        color = TealStatus,
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Text(
                             text = statusText,
-                            color = Green700,
+                            color = TealStatusText,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
@@ -331,7 +328,7 @@ private fun StatusCard(
                     Icon(
                         imageVector = Icons.Rounded.History,
                         contentDescription = stringResource(R.string.cd_history),
-                        tint = Emerald600,
+                        tint = AccentTeal,
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -362,7 +359,7 @@ private fun GlucoseButton(
                 .fillMaxSize()
                 .background(
                     Brush.horizontalGradient(
-                        colors = listOf(Blue600, Blue700)
+                        colors = listOf(AccentTeal, PrimaryGreen)
                     )
                 )
                 .padding(24.dp)
@@ -401,7 +398,7 @@ private fun GlucoseButton(
                         text = stringResource(R.string.action_glucose_subtitle),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Blue100
+                        color = TealLight
                     )
                 }
             }

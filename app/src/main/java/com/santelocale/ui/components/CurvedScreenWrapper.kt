@@ -17,10 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Colors
-private val Emerald600 = Color(0xFF059669)
-private val Emerald700 = Color(0xFF047857)
-private val Slate100 = Color(0xFFF1F5F9)
+// Colors - New teal/green harmony palette
+private val PrimaryGreen = Color(0xFF0E7C66)
+private val AccentTeal = Color(0xFF1BA6A6)
+private val Slate100 = Color(0xFFF4F6F7)
 
 /**
  * Reusable screen wrapper with curved emerald header and floating content.
@@ -55,7 +55,7 @@ fun CurvedScreenWrapper(
                 .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Emerald600, Emerald700)
+                        colors = listOf(AccentTeal, PrimaryGreen)
                     )
                 )
         ) {
