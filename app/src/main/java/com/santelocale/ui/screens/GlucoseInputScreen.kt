@@ -27,16 +27,16 @@ import com.santelocale.R
 import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.GlucoseViewModel
 
-// Colors - Exact mockup values
+// Colors - New teal/green harmony palette
 private val Slate300 = Color(0xFFCBD5E1)
 private val Slate400 = Color(0xFF94A3B8)
 private val Slate700 = Color(0xFF334155)
 private val Slate800 = Color(0xFF1E293B)
 private val Red50 = Color(0xFFFEF2F2)
 private val Red500 = Color(0xFFEF4444)
-private val Emerald50 = Color(0xFFECFDF5)
-private val Emerald500 = Color(0xFF10B981)
-private val Emerald600 = Color(0xFF059669)
+private val PrimaryGreen = Color(0xFF0E7C66)
+private val AccentTeal = Color(0xFF1BA6A6)
+private val TealLight = Color(0xFFE0F2F1)      // Light teal for selected state
 
 /**
  * Glucose Input screen with manual entry keypad and context toggles.
@@ -196,7 +196,7 @@ fun GlucoseInputScreen(
                         .background(
                             brush = if (inputValue.isNotEmpty()) {
                                 Brush.horizontalGradient(
-                                    colors = listOf(Emerald500, Emerald600)
+                                    colors = listOf(AccentTeal, PrimaryGreen)
                                 )
                             } else {
                                 Brush.horizontalGradient(
@@ -236,9 +236,9 @@ private fun ContextToggleButton(
             .clickable(onClick = onClick)
             .alpha(if (isSelected) 1f else 0.8f),
         shape = RoundedCornerShape(12.dp),
-        color = if (isSelected) Emerald50 else Color(0xFFF5F5F5),
+        color = if (isSelected) TealLight else Color(0xFFF5F5F5),
         border = if (isSelected) {
-            BorderStroke(1.5.dp, Emerald500)
+            BorderStroke(1.5.dp, AccentTeal)
         } else {
             BorderStroke(1.dp, Color(0xFFE0E0E0))
         },
@@ -252,7 +252,7 @@ private fun ContextToggleButton(
                 text = text,
                 fontSize = 14.sp,
                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                color = if (isSelected) Emerald600 else Slate400,
+                color = if (isSelected) PrimaryGreen else Slate400,
                 textAlign = TextAlign.Center
             )
         }

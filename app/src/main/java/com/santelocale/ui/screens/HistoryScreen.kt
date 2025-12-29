@@ -28,15 +28,14 @@ import com.santelocale.utils.PdfGenerator
 import java.text.SimpleDateFormat
 import java.util.*
 
-// Colors
-private val Blue100 = Color(0xFFDBEAFE)
-private val Blue600 = Color(0xFF2563EB)
+// Colors - New teal/green harmony palette
+private val TealLight = Color(0xFFE0F2F1)
+private val AccentTeal = Color(0xFF1BA6A6)
 private val Orange100 = Color(0xFFFFEDD5)
 private val Orange500 = Color(0xFFF97316)
 private val Slate400 = Color(0xFF94A3B8)
 private val Slate700 = Color(0xFF334155)
 private val Slate800 = Color(0xFF1E293B)
-private val Emerald600 = Color(0xFF059669)
 
 /**
  * History screen showing all health logs.
@@ -87,7 +86,7 @@ fun HistoryScreen(
                             unit = unit
                         )
                     },
-                    containerColor = Emerald600,
+                    containerColor = AccentTeal,
                     contentColor = Color.White,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -151,8 +150,8 @@ private fun HistoryItemCard(
     val isGlucose = log.type == "GLUCOSE"
 
     // Colors based on type
-    val iconBackground = if (isGlucose) Blue100 else Orange100
-    val iconTint = if (isGlucose) Blue600 else Orange500
+    val iconBackground = if (isGlucose) TealLight else Orange100
+    val iconTint = if (isGlucose) AccentTeal else Orange500
 
     // Value display
     val displayValue = if (isGlucose) {

@@ -11,8 +11,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = Emerald700,
-    secondary = Blue600,
+    primary = PrimaryGreen,
+    secondary = AccentTeal,
     tertiary = Orange500,
     background = Slate50,
     surface = White,
@@ -34,7 +34,7 @@ fun SanteLocaleTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = Emerald700.toArgb()
+            window.statusBarColor = PrimaryGreen.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
         }
     }

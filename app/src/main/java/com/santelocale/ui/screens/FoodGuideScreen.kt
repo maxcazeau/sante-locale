@@ -48,7 +48,7 @@ private val Red100 = Color(0xFFFEE2E2)
 private val Red500 = Color(0xFFEF4444)
 private val Red700 = Color(0xFFB91C1C)
 
-private val Slate50 = Color(0xFFF8FAFC)
+private val Slate50 = Color(0xFFF4F6F7)
 private val Slate400 = Color(0xFF94A3B8)
 private val Slate800 = Color(0xFF1E293B)
 private val Amber500 = Color(0xFFF59E0B)

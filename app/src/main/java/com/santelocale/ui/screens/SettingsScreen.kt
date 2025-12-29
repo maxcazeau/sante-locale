@@ -53,18 +53,17 @@ import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.SettingsViewModel
 import com.santelocale.utils.ReminderScheduler
 
-// Colors
-private val Slate50 = Color(0xFFF8FAFC)
+// Colors - New teal/green harmony palette
+private val Slate50 = Color(0xFFF4F6F7)
 private val Slate100 = Color(0xFFF1F5F9)
 private val Slate300 = Color(0xFFCBD5E1)
 private val Slate400 = Color(0xFF94A3B8)
 private val Slate600 = Color(0xFF475569)
 private val Slate700 = Color(0xFF334155)
 private val Slate800 = Color(0xFF1E293B)
-private val Emerald500 = Color(0xFF10B981)
-private val Emerald600 = Color(0xFF059669)
+private val PrimaryGreen = Color(0xFF0E7C66)
+private val AccentTeal = Color(0xFF1BA6A6)
 private val Orange500 = Color(0xFFF97316)
-private val Blue600 = Color(0xFF2563EB)
 private val Red50 = Color(0xFFFEF2F2)
 private val Red100 = Color(0xFFFEE2E2)
 private val Red500 = Color(0xFFEF4444)
@@ -165,7 +164,7 @@ private fun SettingsMenu(
 
         SettingsMenuItem(
             icon = Icons.Rounded.Person,
-            iconColor = Emerald600,
+            iconColor = PrimaryGreen,
             title = stringResource(R.string.menu_profile_title),
             subtitle = stringResource(R.string.menu_profile_subtitle),
             onClick = { onNavigate(SettingsRoute.Account) }
@@ -181,7 +180,7 @@ private fun SettingsMenu(
 
         SettingsMenuItem(
             icon = Icons.Rounded.Language,
-            iconColor = Blue600,
+            iconColor = AccentTeal,
             title = stringResource(R.string.settings_language),
             subtitle = "Français (HT)", // Language name usually stays in its own language
             onClick = { onNavigate(SettingsRoute.Language) }
@@ -231,7 +230,7 @@ private fun AccountSettings(
                     focusedContainerColor = Slate50,
                     unfocusedIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
-                    cursorColor = Emerald600
+                    cursorColor = AccentTeal
                 ),
                 shape = RoundedCornerShape(16.dp),
                 singleLine = true
@@ -454,7 +453,7 @@ private fun LanguageSettings(
                     RadioButton(
                         selected = isSelected,
                         onClick = { selectedLanguage = language },
-                        colors = RadioButtonDefaults.colors(selectedColor = Emerald600)
+                        colors = RadioButtonDefaults.colors(selectedColor = AccentTeal)
                     )
                     Text(
                         text = language,
@@ -607,7 +606,7 @@ private fun SwitchRow(
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
-                checkedTrackColor = Emerald600,
+                checkedTrackColor = AccentTeal,
                 uncheckedThumbColor = Slate400,
                 uncheckedTrackColor = Slate300
             )
@@ -626,7 +625,7 @@ private fun PrimaryButton(
             .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
+        colors = ButtonDefaults.buttonColors(containerColor = AccentTeal),
         elevation = ButtonDefaults.buttonElevation(2.dp)
     ) {
         Text(text, fontSize = 18.sp, fontWeight = FontWeight.Bold)

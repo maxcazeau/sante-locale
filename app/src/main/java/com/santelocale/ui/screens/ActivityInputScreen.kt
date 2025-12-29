@@ -36,14 +36,14 @@ import androidx.compose.ui.unit.sp
 import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.ActivityViewModel
 
-// Colors
+// Colors - New teal/green harmony palette
 private val Slate300 = Color(0xFFCBD5E1)
 private val Slate400 = Color(0xFF94A3B8)
 private val Slate700 = Color(0xFF334155)
 private val Slate800 = Color(0xFF1E293B)
-private val Emerald50 = Color(0xFFECFDF5)
-private val Emerald500 = Color(0xFF10B981)
-private val Emerald600 = Color(0xFF059669)
+private val PrimaryGreen = Color(0xFF0E7C66)
+private val AccentTeal = Color(0xFF1BA6A6)
+private val TealLight = Color(0xFFE0F2F1)
 
 private data class ActivityType(
     val label: String,
@@ -141,7 +141,7 @@ fun ActivityInputScreen(
                     .height(64.dp) // Reduced height
                     .padding(bottom = 16.dp, start = 16.dp, end = 16.dp), // Reduced margins
                 shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
+                colors = ButtonDefaults.buttonColors(containerColor = AccentTeal),
                 elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 2.dp,
                     pressedElevation = 0.dp
@@ -165,7 +165,7 @@ private fun AnimatedIcon(
 ) {
     Surface(
         shape = CircleShape,
-        color = Emerald50,
+        color = TealLight,
         modifier = Modifier.size(72.dp) // Reduced size
     ) {
         Box(contentAlignment = Alignment.Center) {
@@ -173,7 +173,7 @@ private fun AnimatedIcon(
                 Icon(
                     imageVector = targetIcon,
                     contentDescription = contentDescription,
-                    tint = Emerald600,
+                    tint = AccentTeal,
                     modifier = Modifier.size(36.dp) // Reduced icon size
                 )
             }
@@ -267,10 +267,10 @@ private fun ActivityGrid(
                     .clickable { onActivitySelected(activity) }
                     .then(if (!isSelected) Modifier.alpha(0.8f) else Modifier),
                 shape = RoundedCornerShape(20.dp),
-                color = if (isSelected) Emerald50 else Color(0xFFF5F5F5),
+                color = if (isSelected) TealLight else Color(0xFFF5F5F5),
                 // Thicker border for selected state
                 border = if (isSelected) {
-                    BorderStroke(1.5.dp, Emerald500)
+                    BorderStroke(1.5.dp, AccentTeal)
                 } else {
                     BorderStroke(1.dp, Color(0xFFE0E0E0))
                 },
@@ -286,17 +286,17 @@ private fun ActivityGrid(
                     Icon(
                         imageVector = activity.icon,
                         contentDescription = null,
-                        tint = if (isSelected) Emerald600 else Slate400,
+                        tint = if (isSelected) PrimaryGreen else Slate400,
                         modifier = Modifier.size(32.dp) // Larger icons (text-3xl approx)
                     )
-                    
+
                     Spacer(modifier = Modifier.width(12.dp)) // Reduced spacing from 16dp to 12dp
-                    
+
                     Text(
                         text = activity.label,
                         fontSize = 16.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        color = if (isSelected) Emerald600 else Slate700,
+                        color = if (isSelected) PrimaryGreen else Slate700,
                         maxLines = 1, // Prevent multiline breaks
                         overflow = TextOverflow.Ellipsis // Handle overflow gracefully
                     )
