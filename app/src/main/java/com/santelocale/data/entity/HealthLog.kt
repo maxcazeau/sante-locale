@@ -3,7 +3,10 @@ package com.santelocale.data.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "health_logs")
+@Entity(
+    tableName = "health_logs",
+    indices = [androidx.room.Index(value = ["date"])]
+)
 data class HealthLog(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val type: String, // "GLUCOSE" or "ACTIVITY"
