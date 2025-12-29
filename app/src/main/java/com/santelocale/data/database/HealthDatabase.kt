@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.santelocale.data.loadFoodData
 import com.santelocale.data.dao.FoodItemDao
 import com.santelocale.data.dao.HealthLogDao
@@ -16,7 +15,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [HealthLog::class, FoodItem::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class HealthDatabase : RoomDatabase() {
@@ -35,19 +34,18 @@ abstract class HealthDatabase : RoomDatabase() {
                     HealthDatabase::class.java,
                     "sante_locale_database"
                 )
-                    .addCallback(object : RoomDatabase.Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            // Prepopulate food items on first launch from content.json
-                            INSTANCE?.let { database ->
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    loadFoodData(appContext, database)
-                                }
-                            }
-                        }
-                    })
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
+
+                // Prepopulate food items if empty (handles first launch and destructive migrations)
+                CoroutineScope(Dispatchers.IO).launch {
+                    val count = instance.foodItemDao().getCount()
+                    if (count == 0) {
+                        loadFoodData(appContext, instance)
+                    }
+                }
+
                 instance
             }
         }

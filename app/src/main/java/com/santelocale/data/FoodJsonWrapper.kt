@@ -1,5 +1,6 @@
 package com.santelocale.data
 
+import com.google.gson.annotations.SerializedName
 import com.santelocale.data.entity.FoodItem
 
 /**
@@ -17,6 +18,7 @@ data class FoodItemJson(
     val id: String,
     val name: String,
     val category: String,
+    @SerializedName("image_url")
     val imageUrl: String,
     val tip: String
 ) {
