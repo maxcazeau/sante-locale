@@ -33,17 +33,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
 import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.ActivityViewModel
-
-// Colors - New teal/green harmony palette
-private val Slate300 = Color(0xFFCBD5E1)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate700 = Color(0xFF334155)
-private val Slate800 = Color(0xFF1E293B)
-private val PrimaryGreen = Color(0xFF0E7C66)
-private val AccentTeal = Color(0xFF1BA6A6)
-private val TealLight = Color(0xFFE0F2F1)
+import com.santelocale.ui.theme.*
 
 private data class ActivityType(
     val label: String,
@@ -51,9 +44,9 @@ private data class ActivityType(
 )
 
 private val activityTypes = listOf(
-    ActivityType("Marche", Icons.Rounded.DirectionsWalk),
-    ActivityType("Ménage", Icons.Rounded.CleaningServices),
+    ActivityType("Marche", Icons.AutoMirrored.Rounded.DirectionsWalk),
     ActivityType("Jardinage", Icons.Rounded.Park),
+    ActivityType("Ménage", Icons.Rounded.CleaningServices),
     ActivityType("Autres", Icons.Rounded.MoreHoriz)
 )
 
@@ -133,8 +126,9 @@ fun ActivityInputScreen(
             // Save Button
             Button(
                 onClick = {
-                    viewModel.saveActivity(selectedActivity.label, minutes)
-                    onBack()
+                    if (viewModel.saveActivity(selectedActivity.label, minutes)) {
+                        onBack()
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
