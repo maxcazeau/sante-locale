@@ -12,6 +12,7 @@ import com.santelocale.data.entity.HealthLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 @Database(
     entities = [HealthLog::class, FoodItem::class],
@@ -26,28 +27,49 @@ abstract class HealthDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: HealthDatabase? = null
 
+        private const val DATABASE_NAME = "sante_locale_database"
+
         fun getDatabase(context: Context): HealthDatabase {
             return INSTANCE ?: synchronized(this) {
                 val appContext = context.applicationContext
+
+                // Get or create the encryption key
+                val keyManager = DatabaseKeyManager(appContext)
+                val passphrase = keyManager.getOrCreateDatabaseKey()
+
+                // Create SQLCipher SupportOpenHelperFactory with the passphrase
+                val factory = SupportOpenHelperFactory(passphrase)
+
                 val instance = Room.databaseBuilder(
                     appContext,
                     HealthDatabase::class.java,
-                    "sante_locale_database"
+                    DATABASE_NAME
                 )
+                    .openHelperFactory(factory)
                     .fallbackToDestructiveMigration()
                     .build()
+
                 INSTANCE = instance
 
-                // Prepopulate food items if empty (handles first launch and destructive migrations)
+                // Prepopulate food items if the database is empty
                 CoroutineScope(Dispatchers.IO).launch {
-                    val count = instance.foodItemDao().getCount()
-                    if (count == 0) {
+                    if (instance.foodItemDao().getCount() == 0) {
                         loadFoodData(appContext, instance)
                     }
                 }
 
                 instance
             }
+        }
+
+        /**
+         * Delete the existing unencrypted database.
+         * Call this before first access when migrating to encrypted database.
+         */
+        fun deleteExistingDatabase(context: Context) {
+            context.deleteDatabase(DATABASE_NAME)
+            context.deleteDatabase("$DATABASE_NAME-wal")
+            context.deleteDatabase("$DATABASE_NAME-shm")
         }
     }
 }
