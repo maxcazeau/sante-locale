@@ -45,6 +45,13 @@
     private final java.lang.Runnable runnable;
 }
 
+# SQLCipher
+-keep class net.sqlcipher.** { *; }
+-keep class net.sqlcipher.database.** { *; }
+-keep class net.zetetic.** { *; }
+-dontwarn net.sqlcipher.**
+-dontwarn net.zetetic.**
+
 # General optimizations
 -repackageclasses ''
 -allowaccessmodification

@@ -2,4 +2,8 @@
 <full-backup-content>
     <!-- Exclude database from backup to avoid conflicts -->
     <exclude domain="database" path="sante_locale_database" />
+    <exclude domain="database" path="sante_locale_database-wal" />
+    <exclude domain="database" path="sante_locale_database-shm" />
+    <!-- Exclude encrypted key preferences (security) -->
+    <exclude domain="sharedpref" path="sante_locale_encrypted_prefs.xml" />
 </full-backup-content>
