@@ -86,6 +86,10 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
 
+    // SQLCipher for database encryption
+    implementation("net.zetetic:sqlcipher-android:4.6.1@aar")
+    implementation("androidx.sqlite:sqlite-ktx:2.4.0")
+
     // DataStore (for settings)
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
