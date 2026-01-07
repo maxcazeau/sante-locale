@@ -14,9 +14,6 @@ class DashboardViewModel(
     private val repository: HealthRepository
 ) : ViewModel() {
 
-    val allLogs: StateFlow<List<HealthLog>> = repository.allLogs
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
     val lastGlucose: StateFlow<HealthLog?> = repository.lastGlucose
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 

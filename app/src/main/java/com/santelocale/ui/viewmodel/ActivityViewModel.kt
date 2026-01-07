@@ -17,10 +17,13 @@ class ActivityViewModel(
 
     /**
      * Save an activity log to the database.
-     * @param label The activity label (e.g., "Marche (30 min)")
+     * @param label The activity label (e.g., "Marche")
      * @param minutes The duration in minutes
+     * @return true if saved successfully
      */
-    fun saveActivity(label: String, minutes: Int) {
+    fun saveActivity(label: String, minutes: Int): Boolean {
+        if (minutes <= 0) return false
+        
         viewModelScope.launch {
             repository.insertLog(
                 HealthLog(
@@ -32,6 +35,7 @@ class ActivityViewModel(
                 )
             )
         }
+        return true
     }
 }
 

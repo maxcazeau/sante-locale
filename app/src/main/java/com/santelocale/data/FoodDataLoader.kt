@@ -27,10 +27,25 @@ suspend fun loadFoodData(context: Context, database: HealthDatabase) {
 
         // Parse JSON using Gson
         val gson = Gson()
-        val wrapper = gson.fromJson(jsonString, FoodJsonWrapper::class.java)
+        val wrapper = try {
+            gson.fromJson(jsonString, FoodJsonWrapper::class.java)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing $CONTENT_FILE: ${e.message}", e)
+            return
+        }
+
+        if (wrapper?.foods == null) {
+            Log.e(TAG, "JSON content is null or empty in $CONTENT_FILE")
+            return
+        }
 
         // Convert to FoodItem entities
         val foodItems = wrapper.foods.map { it.toFoodItem() }
+        
+        if (foodItems.isEmpty()) {
+            Log.w(TAG, "No food items found in $CONTENT_FILE to insert.")
+            return
+        }
 
         // Insert into database using foodItemDao
         database.foodItemDao().insertAll(foodItems)

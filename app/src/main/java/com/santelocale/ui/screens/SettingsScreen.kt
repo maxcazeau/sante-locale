@@ -11,7 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,7 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Language
@@ -50,23 +50,9 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.santelocale.R
 import com.santelocale.ui.components.CurvedScreenWrapper
+import com.santelocale.ui.theme.*
 import com.santelocale.ui.viewmodel.SettingsViewModel
 import com.santelocale.utils.ReminderScheduler
-
-// Colors - New teal/green harmony palette
-private val Slate50 = Color(0xFFF4F6F7)
-private val Slate100 = Color(0xFFF1F5F9)
-private val Slate300 = Color(0xFFCBD5E1)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate600 = Color(0xFF475569)
-private val Slate700 = Color(0xFF334155)
-private val Slate800 = Color(0xFF1E293B)
-private val PrimaryGreen = Color(0xFF0E7C66)
-private val AccentTeal = Color(0xFF1BA6A6)
-private val Orange500 = Color(0xFFF97316)
-private val Red50 = Color(0xFFFEF2F2)
-private val Red100 = Color(0xFFFEE2E2)
-private val Red500 = Color(0xFFEF4444)
 
 // Internal Routes
 private enum class SettingsRoute {
@@ -116,10 +102,10 @@ fun SettingsScreen(
                 targetState = currentRoute,
                 transitionSpec = {
                     if (targetState != SettingsRoute.Menu) {
-                        slideInHorizontally { width -> width } + fadeIn() with
+                        slideInHorizontally { width -> width } + fadeIn() togetherWith
                                 slideOutHorizontally { width -> -width } + fadeOut()
                     } else {
-                        slideInHorizontally { width -> -width } + fadeIn() with
+                        slideInHorizontally { width -> -width } + fadeIn() togetherWith
                                 slideOutHorizontally { width -> width } + fadeOut()
                     }
                 },
@@ -313,7 +299,7 @@ private fun NotificationSettings(
                 }
             )
             
-            Divider(color = Slate100, thickness = 1.dp)
+            HorizontalDivider(color = Slate100, thickness = 1.dp)
             
             SwitchRow(
                 title = stringResource(R.string.reminder_evening_title),
@@ -388,7 +374,7 @@ private fun PrivacySettings(
                 border = BorderStroke(1.dp, Red100),
                 elevation = ButtonDefaults.buttonElevation(0.dp)
             ) {
-                Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(20.dp))
+                Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(stringResource(R.string.btn_clear_data), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
@@ -464,7 +450,7 @@ private fun LanguageSettings(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Divider(color = Slate100)
+                HorizontalDivider(color = Slate100)
             }
         }
 

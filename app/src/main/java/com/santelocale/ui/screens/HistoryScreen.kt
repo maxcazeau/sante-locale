@@ -7,10 +7,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DirectionsRun
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.automirrored.rounded.DirectionsRun
+import androidx.compose.material.icons.rounded.DirectionsRun
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,19 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.santelocale.data.entity.HealthLog
 import com.santelocale.ui.components.CurvedScreenWrapper
+import com.santelocale.ui.theme.*
 import com.santelocale.ui.viewmodel.HistoryViewModel
 import com.santelocale.utils.PdfGenerator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-
-// Colors - New teal/green harmony palette
-private val TealLight = Color(0xFFE0F2F1)
-private val AccentTeal = Color(0xFF1BA6A6)
-private val Orange100 = Color(0xFFFFEDD5)
-private val Orange500 = Color(0xFFF97316)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate700 = Color(0xFF334155)
-private val Slate800 = Color(0xFF1E293B)
 
 /**
  * History screen showing all health logs.
@@ -50,6 +45,7 @@ fun HistoryScreen(
 ) {
     val logs by viewModel.allLogs.collectAsState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     CurvedScreenWrapper(
         title = "Historique",
@@ -79,12 +75,14 @@ fun HistoryScreen(
             if (logs.isNotEmpty()) {
                 FloatingActionButton(
                     onClick = {
-                        PdfGenerator.generateAndShare(
-                            context = context,
-                            userName = userName,
-                            logs = logs,
-                            unit = unit
-                        )
+                        scope.launch(Dispatchers.IO) {
+                            PdfGenerator.generateAndShare(
+                                context = context,
+                                userName = userName,
+                                logs = logs,
+                                unit = unit
+                            )
+                        }
                     },
                     containerColor = AccentTeal,
                     contentColor = Color.White,
@@ -93,7 +91,7 @@ fun HistoryScreen(
                         .padding(16.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Share,
+                        imageVector = Icons.Rounded.Share,
                         contentDescription = "Exporter PDF"
                     )
                 }
@@ -117,7 +115,7 @@ private fun EmptyState(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                imageVector = Icons.Default.History,
+                imageVector = Icons.Rounded.History,
                 contentDescription = null,
                 tint = Slate400.copy(alpha = 0.3f),
                 modifier = Modifier.size(96.dp)
@@ -150,7 +148,7 @@ private fun HistoryItemCard(
     val isGlucose = log.type == "GLUCOSE"
 
     // Colors based on type
-    val iconBackground = if (isGlucose) TealLight else Orange100
+    val iconBackground = if (isGlucose) TealStatus else Orange100
     val iconTint = if (isGlucose) AccentTeal else Orange500
 
     // Value display
@@ -183,12 +181,12 @@ private fun HistoryItemCard(
                     .background(iconBackground, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = if (isGlucose) Icons.Default.WaterDrop else Icons.Default.DirectionsRun,
-                    contentDescription = null,
-                    tint = iconTint,
-                    modifier = Modifier.size(24.dp)
-                )
+            Icon(
+                imageVector = if (isGlucose) Icons.Rounded.WaterDrop else Icons.AutoMirrored.Rounded.DirectionsRun,
+                contentDescription = null,
+                tint = iconTint, // Fixed wrong tint reference from previous bad paste
+                modifier = Modifier.size(24.dp)
+            )
             }
 
             Spacer(modifier = Modifier.width(16.dp))

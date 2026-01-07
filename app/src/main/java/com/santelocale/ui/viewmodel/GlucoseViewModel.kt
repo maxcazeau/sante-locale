@@ -21,6 +21,16 @@ class GlucoseViewModel(
     private val _inputValue = MutableStateFlow("")
     val inputValue: StateFlow<String> = _inputValue.asStateFlow()
 
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    /**
+     * Clear the error state.
+     */
+    fun clearError() {
+        _error.value = null
+    }
+
     /**
      * Append a digit to the input value.
      * Limits to 5 characters to prevent overflow.
@@ -64,13 +74,30 @@ class GlucoseViewModel(
      * Converts comma to dot for storage, keeps comma for display.
      * @param unit The glucose unit (e.g., "mg/dL" or "mmol/L") - stored for reference
      * @param context The context of the reading (e.g., "Avant repas", "Après repas")
+     * @return true if saved successfully, false otherwise
      */
-    fun saveGlucose(unit: String, context: String? = null) {
+    fun saveGlucose(unit: String, context: String? = null): Boolean {
         val displayValue = _inputValue.value
-        if (displayValue.isEmpty()) return
+        if (displayValue.isEmpty()) return false
 
         // Convert comma to dot for numeric parsing
-        val numericValue = displayValue.replace(",", ".").toFloatOrNull() ?: return
+        val numericValue = displayValue.replace(",", ".").toFloatOrNull()
+        if (numericValue == null) {
+            _error.value = "error_invalid_value"
+            return false
+        }
+
+        // Validation based on unit
+        val (min, max) = if (unit == "mmol/L") 1.1f to 33.3f else 20f to 600f
+        
+        if (numericValue < min) {
+            _error.value = "error_value_too_low"
+            return false
+        }
+        if (numericValue > max) {
+            _error.value = "error_value_too_high"
+            return false
+        }
 
         // Construct label with context if provided
         val finalLabel = if (context != null) "$unit • $context" else unit
@@ -88,6 +115,7 @@ class GlucoseViewModel(
             // Clear input after saving
             _inputValue.value = ""
         }
+        return true
     }
 
     /**

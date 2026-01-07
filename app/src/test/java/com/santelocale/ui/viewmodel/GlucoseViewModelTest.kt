@@ -59,19 +59,44 @@ class GlucoseViewModelTest {
     }
 
     @Test
-    fun `saveGlucose calls repository`() = runTest {
-        // Simulating input "100"
+    fun `saveGlucose returns true for valid input and calls repository`() = runTest {
+        // Simulating valid input "100"
         viewModel.appendDigit("1")
         viewModel.appendDigit("0")
         viewModel.appendDigit("0")
         
-        viewModel.saveGlucose("mg/dL")
+        val result = viewModel.saveGlucose("mg/dL")
         
+        assertTrue(result)
         // Verify repository save was called
         verify(repository).insertLog(any())
         
         // Check input is cleared after save
         assertEquals("", viewModel.inputValue.first())
+    }
+
+    @Test
+    fun `saveGlucose returns false for invalid low value`() = runTest {
+        // Simulating invalid low input "5"
+        viewModel.appendDigit("5")
+        
+        val result = viewModel.saveGlucose("mg/dL")
+        
+        assertTrue(!result)
+        assertEquals("error_value_too_low", viewModel.error.first())
+    }
+
+    @Test
+    fun `saveGlucose returns false for invalid high value`() = runTest {
+        // Simulating invalid high input "700"
+        viewModel.appendDigit("7")
+        viewModel.appendDigit("0")
+        viewModel.appendDigit("0")
+        
+        val result = viewModel.saveGlucose("mg/dL")
+        
+        assertTrue(!result)
+        assertEquals("error_value_too_high", viewModel.error.first())
     }
     
     @Test

@@ -94,37 +94,15 @@ fun SanteLocaleApp(
     val userName by userPreferencesRepository.userNameFlow.collectAsState(initial = "")
     val unit by userPreferencesRepository.glucoseUnitFlow.collectAsState(initial = "mg/dL")
 
-    // ViewModels
-    val dashboardViewModel: DashboardViewModel = viewModel(
-        factory = DashboardViewModelFactory(healthRepository)
-    )
-
-    val settingsViewModel: SettingsViewModel = viewModel(
-        factory = SettingsViewModelFactory(userPreferencesRepository, healthRepository)
-    )
-
-    val glucoseViewModel: GlucoseViewModel = viewModel(
-        factory = GlucoseViewModelFactory(healthRepository)
-    )
-
-    val foodViewModel: FoodViewModel = viewModel(
-        factory = FoodViewModelFactory(healthRepository)
-    )
-
-    val activityViewModel: ActivityViewModel = viewModel(
-        factory = ActivityViewModelFactory(healthRepository)
-    )
-
-    val historyViewModel: HistoryViewModel = viewModel(
-        factory = HistoryViewModelFactory(healthRepository)
-    )
-
     // Navigation Host
     NavHost(
         navController = navController,
         startDestination = Screen.Dashboard.route
     ) {
         composable(Screen.Dashboard.route) {
+            val dashboardViewModel: DashboardViewModel = viewModel(
+                factory = DashboardViewModelFactory(healthRepository)
+            )
             DashboardScreen(
                 viewModel = dashboardViewModel,
                 userName = userName,
@@ -134,6 +112,9 @@ fun SanteLocaleApp(
         }
 
         composable(Screen.Settings.route) {
+            val settingsViewModel: SettingsViewModel = viewModel(
+                factory = SettingsViewModelFactory(userPreferencesRepository, healthRepository)
+            )
             SettingsScreen(
                 viewModel = settingsViewModel,
                 onBack = { navController.popBackStack() }
@@ -141,15 +122,20 @@ fun SanteLocaleApp(
         }
 
         composable(Screen.GlucoseInput.route) {
-            // GlucoseInputScreen with NavController
+            val glucoseViewModel: GlucoseViewModel = viewModel(
+                factory = GlucoseViewModelFactory(healthRepository)
+            )
             GlucoseInputScreen(
                 navController = navController,
                 viewModel = glucoseViewModel,
-                userUnit = unit  // Using real user unit from settings (defaults to "mg/dL")
+                userUnit = unit
             )
         }
 
         composable(Screen.FoodGuide.route) {
+            val foodViewModel: FoodViewModel = viewModel(
+                factory = FoodViewModelFactory(healthRepository)
+            )
             FoodGuideScreen(
                 viewModel = foodViewModel,
                 onBack = { navController.popBackStack() }
@@ -157,6 +143,9 @@ fun SanteLocaleApp(
         }
 
         composable(Screen.ActivityInput.route) {
+            val activityViewModel: ActivityViewModel = viewModel(
+                factory = ActivityViewModelFactory(healthRepository)
+            )
             ActivityInputScreen(
                 viewModel = activityViewModel,
                 onBack = { navController.popBackStack() }
@@ -164,6 +153,9 @@ fun SanteLocaleApp(
         }
 
         composable(Screen.History.route) {
+            val historyViewModel: HistoryViewModel = viewModel(
+                factory = HistoryViewModelFactory(healthRepository)
+            )
             HistoryScreen(
                 viewModel = historyViewModel,
                 unit = unit,
@@ -173,3 +165,4 @@ fun SanteLocaleApp(
         }
     }
 }
+

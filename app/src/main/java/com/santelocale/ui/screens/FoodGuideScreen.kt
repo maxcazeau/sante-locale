@@ -8,8 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,25 +32,12 @@ import coil.request.ImageRequest
 import com.santelocale.data.entity.FoodItem
 import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.FoodViewModel
+import com.santelocale.ui.theme.*
 
-// Colors - Updated for semantic themes
+// Colors - Specific to Food Guide semantic highlights if not in main theme
 private val Emerald100 = Color(0xFFD1FAE5)
-private val Emerald600 = Color(0xFF059669)
-private val Emerald700 = Color(0xFF047857)
-
-private val Orange50 = Color(0xFFFFF7ED)
 private val Orange100 = Color(0xFFFFEDD5)
-private val Orange500 = Color(0xFFF97316)
-private val Orange700 = Color(0xFFC2410C)
-
-private val Red50 = Color(0xFFFEF2F2)
 private val Red100 = Color(0xFFFEE2E2)
-private val Red500 = Color(0xFFEF4444)
-private val Red700 = Color(0xFFB91C1C)
-
-private val Slate50 = Color(0xFFF4F6F7)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate800 = Color(0xFF1E293B)
 private val Amber500 = Color(0xFFF59E0B)
 
 /**
@@ -93,7 +80,7 @@ fun FoodGuideScreen(
                         text = "À VOLONTÉ",
                         isSelected = selectedCategory == "VERT",
                         activeBackgroundColor = Emerald100,
-                        activeTextColor = Emerald700,
+                        activeTextColor = PrimaryGreen,
                         onClick = { viewModel.selectCategory("VERT") },
                         modifier = Modifier.weight(1f)
                     )
@@ -102,7 +89,7 @@ fun FoodGuideScreen(
                         text = "MODÉRÉMENT",
                         isSelected = selectedCategory == "JAUNE",
                         activeBackgroundColor = Orange100,
-                        activeTextColor = Orange700,
+                        activeTextColor = Orange500,
                         onClick = { viewModel.selectCategory("JAUNE") },
                         modifier = Modifier.weight(1f)
                     )
@@ -111,7 +98,7 @@ fun FoodGuideScreen(
                         text = "À ÉVITER",
                         isSelected = selectedCategory == "ROUGE",
                         activeBackgroundColor = Red100,
-                        activeTextColor = Red700,
+                        activeTextColor = Red500,
                         onClick = { viewModel.selectCategory("ROUGE") },
                         modifier = Modifier.weight(1f)
                     )
@@ -186,7 +173,7 @@ private fun FoodCard(food: FoodItem) {
 
     // Category colors
     val (categoryColor, tipBackgroundColor) = when (food.category) {
-        "VERT" -> Emerald600 to Slate50
+        "VERT" -> PrimaryGreen to Slate50
         "JAUNE" -> Orange500 to Orange50
         "ROUGE" -> Red500 to Red50
         else -> Color.Gray to Slate50
@@ -238,7 +225,7 @@ private fun FoodCard(food: FoodItem) {
                         error = {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
-                                    Icons.Default.Image,
+                                    imageVector = Icons.Rounded.Image,
                                     contentDescription = null,
                                     tint = categoryColor.copy(alpha = 0.5f),
                                     modifier = Modifier.size(32.dp)
@@ -289,7 +276,7 @@ private fun FoodCard(food: FoodItem) {
                         verticalAlignment = Alignment.Top
                     ) {
                         Icon(
-                            Icons.Default.Lightbulb,
+                            imageVector = Icons.Rounded.Lightbulb,
                             contentDescription = "Conseil",
                             tint = Amber500,
                             modifier = Modifier.size(20.dp)
