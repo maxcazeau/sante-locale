@@ -1,5 +1,6 @@
 package com.santelocale.utils
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
@@ -258,6 +259,7 @@ object PdfGenerator {
                 Intent.EXTRA_TEXT,
                 "Voici le rapport de santé généré par Santé Locale."
             )
+            clipData = ClipData.newRawUri("", uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 
@@ -281,7 +283,32 @@ object PdfGenerator {
         logs: List<HealthLog>,
         unit: String = "mg/dL"
     ) {
+        cleanupOldReports(context)
         val file = generateReport(context, userName, logs, unit)
         shareReport(context, file, userName)
+    }
+
+    /**
+     * Deletes PDF files in the documents directory that are older than 24 hours.
+     * Prevents storage bloat from accumulated reports.
+     */
+    private fun cleanupOldReports(context: Context) {
+        try {
+            val documentsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                ?: context.filesDir
+            val files = documentsDir.listFiles { _, name -> name.startsWith("rapport_sante_") && name.endsWith(".pdf") }
+            
+            val currentTime = System.currentTimeMillis()
+            val oneDayInMillis = 24 * 60 * 60 * 1000L
+
+            files?.forEach { file ->
+                if (currentTime - file.lastModified() > oneDayInMillis) {
+                    file.delete()
+                }
+            }
+        } catch (e: Exception) {
+            // Non-critical: just log if cleanup fails
+            android.util.Log.e("PdfGenerator", "Error during PDF cleanup: ${e.message}")
+        }
     }
 }
