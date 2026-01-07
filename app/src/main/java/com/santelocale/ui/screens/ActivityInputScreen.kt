@@ -9,10 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
 import androidx.compose.material.icons.rounded.Add
@@ -30,9 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.santelocale.R
 import com.santelocale.ui.components.CurvedScreenWrapper
 import com.santelocale.ui.viewmodel.ActivityViewModel
 
@@ -67,28 +67,26 @@ fun ActivityInputScreen(
     var minutes by remember { mutableIntStateOf(30) }
 
     CurvedScreenWrapper(
-        title = "Activité",
-        onBack = onBack,
-        headerHeight = 200.dp // Reduced header height for better fit
+        title = stringResource(R.string.title_activity),
+        onBack = onBack
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Main Content Card
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp), // Reduced vertical padding
+                    .weight(1f),
                 shape = RoundedCornerShape(24.dp),
                 color = Color.White,
                 shadowElevation = 2.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp), // Reduced padding
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.padding(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     // 1. Large Main Icon (Animated)
                     AnimatedIcon(
@@ -96,19 +94,15 @@ fun ActivityInputScreen(
                         contentDescription = selectedActivity.label
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp)) // Reduced spacing
-
                     // 2. Question Text
                     Text(
-                        text = "Combien de minutes d'activité avez-vous fait ?",
-                        fontSize = 20.sp, // Reduced size
+                        text = stringResource(R.string.activity_question),
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Slate800,
                         textAlign = TextAlign.Center,
-                        lineHeight = 28.sp
+                        lineHeight = 24.sp
                     )
-
-                    Spacer(modifier = Modifier.height(24.dp)) // Reduced spacing
 
                     // 3. Time Selector
                     TimeSelector(
@@ -116,19 +110,15 @@ fun ActivityInputScreen(
                         onMinutesChange = { minutes = it }
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp)) // Reduced spacing
-
                     // 4. Activity Grid
                     ActivityGrid(
                         selectedActivity = selectedActivity,
                         onActivitySelected = { selectedActivity = it }
                     )
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Save Button
             Button(
@@ -138,9 +128,8 @@ fun ActivityInputScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp) // Reduced height
-                    .padding(bottom = 16.dp, start = 16.dp, end = 16.dp), // Reduced margins
-                shape = RoundedCornerShape(24.dp),
+                    .height(56.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = AccentTeal),
                 elevation = ButtonDefaults.buttonElevation(
                     defaultElevation = 2.dp,
@@ -148,8 +137,8 @@ fun ActivityInputScreen(
                 )
             ) {
                 Text(
-                    text = "Enregistrer",
-                    fontSize = 18.sp, // Slightly reduced font
+                    text = stringResource(R.string.btn_save_normal),
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -166,7 +155,7 @@ private fun AnimatedIcon(
     Surface(
         shape = CircleShape,
         color = TealLight,
-        modifier = Modifier.size(72.dp) // Reduced size
+        modifier = Modifier.size(56.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
             AnimatedContent(targetState = icon, label = "icon_anim") { targetIcon ->
@@ -174,7 +163,7 @@ private fun AnimatedIcon(
                     imageVector = targetIcon,
                     contentDescription = contentDescription,
                     tint = AccentTeal,
-                    modifier = Modifier.size(36.dp) // Reduced icon size
+                    modifier = Modifier.size(28.dp)
                 )
             }
         }
@@ -195,53 +184,50 @@ private fun TimeSelector(
         IconButton(
             onClick = { if (minutes > 5) onMinutesChange(minutes - 5) },
             modifier = Modifier
-                .size(56.dp) // Reduced size
+                .size(48.dp)
                 .background(Slate300.copy(alpha = 0.3f), CircleShape)
         ) {
             Icon(
                 imageVector = Icons.Rounded.Remove,
-                contentDescription = "Diminuer",
+                contentDescription = stringResource(R.string.cd_decrease),
                 tint = Slate700,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(24.dp)
             )
         }
 
-        Spacer(modifier = Modifier.width(24.dp)) // Reduced spacing
+        Spacer(modifier = Modifier.width(20.dp))
 
         // Value Display
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = minutes.toString(),
-                fontSize = 64.sp, // Reduced font size
+                fontSize = 48.sp,
                 fontWeight = FontWeight.Black,
                 color = Slate800,
-                lineHeight = 64.sp
+                lineHeight = 48.sp
             )
-            
-            Spacer(modifier = Modifier.height(4.dp))
-            
             Text(
-                text = "Minutes",
-                fontSize = 14.sp,
+                text = stringResource(R.string.label_minutes),
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = Slate400
             )
         }
 
-        Spacer(modifier = Modifier.width(24.dp)) // Reduced spacing
+        Spacer(modifier = Modifier.width(20.dp))
 
         // Plus Button
         IconButton(
             onClick = { if (minutes < 300) onMinutesChange(minutes + 5) },
             modifier = Modifier
-                .size(56.dp) // Reduced size
+                .size(48.dp)
                 .background(Slate300.copy(alpha = 0.3f), CircleShape)
         ) {
             Icon(
                 imageVector = Icons.Rounded.Add,
-                contentDescription = "Augmenter",
+                contentDescription = stringResource(R.string.cd_increase),
                 tint = Slate700,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(24.dp)
             )
         }
     }
@@ -254,21 +240,20 @@ private fun ActivityGrid(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.height(160.dp) // Reduced height
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.height(130.dp)
     ) {
         items(activityTypes) { activity ->
             val isSelected = activity == selectedActivity
-            
+
             Surface(
                 modifier = Modifier
-                    .height(72.dp) // Reduced item height
+                    .height(58.dp)
                     .clickable { onActivitySelected(activity) }
                     .then(if (!isSelected) Modifier.alpha(0.8f) else Modifier),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = if (isSelected) TealLight else Color(0xFFF5F5F5),
-                // Thicker border for selected state
                 border = if (isSelected) {
                     BorderStroke(1.5.dp, AccentTeal)
                 } else {
@@ -279,7 +264,7 @@ private fun ActivityGrid(
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 12.dp), // Reduced padding from 20dp to 12dp
+                        .padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
@@ -287,18 +272,18 @@ private fun ActivityGrid(
                         imageVector = activity.icon,
                         contentDescription = null,
                         tint = if (isSelected) PrimaryGreen else Slate400,
-                        modifier = Modifier.size(32.dp) // Larger icons (text-3xl approx)
+                        modifier = Modifier.size(24.dp)
                     )
 
-                    Spacer(modifier = Modifier.width(12.dp)) // Reduced spacing from 16dp to 12dp
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     Text(
                         text = activity.label,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                         color = if (isSelected) PrimaryGreen else Slate700,
-                        maxLines = 1, // Prevent multiline breaks
-                        overflow = TextOverflow.Ellipsis // Handle overflow gracefully
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
