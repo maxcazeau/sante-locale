@@ -8,7 +8,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+
+// ============================================================================
+// HEADER DIMENSIONS - Unified across all screens for seamless transitions
+// ============================================================================
+
+/** Master header height used by all screens with curved headers */
+val HeaderHeight = 260.dp
+
+/** Header content top padding (positions back button and title consistently) */
+val HeaderContentTopPadding = 48.dp
+
+/** Header corner radius for the curved bottom edge */
+val HeaderCornerRadius = 32.dp
+
+/** Content overlap - how much the floating content overlaps the header */
+val HeaderContentOverlap = 48.dp
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryGreen,
@@ -34,6 +51,7 @@ fun SanteLocaleTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
+            @Suppress("DEPRECATION")
             window.statusBarColor = PrimaryGreen.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
         }

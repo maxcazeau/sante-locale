@@ -16,6 +16,13 @@
     <string name="action_food">Manger</string>
     <string name="action_activity">Bouger</string>
 
+    <!-- Activity Input -->
+    <string name="title_activity">Activité</string>
+    <string name="activity_question">Combien de minutes d\'activité avez-vous fait ?</string>
+    <string name="label_minutes">Minutes</string>
+    <string name="cd_decrease">Diminuer</string>
+    <string name="cd_increase">Augmenter</string>
+
     <!-- Glucose Input -->
     <string name="title_new_glucose">Nouvelle Glycémie</string>
     <string name="label_your_rate">VOTRE TAUX</string>
@@ -75,4 +82,9 @@
 
     <!-- Settings Language -->
     <string name="label_app_language">LANGUE DE L\'APPLICATION</string>
+
+    <!-- Error Messages -->
+    <string name="error_invalid_value">Valeur invalide</string>
+    <string name="error_value_too_low">La valeur est trop basse</string>
+    <string name="error_value_too_high">La valeur est trop élevée</string>
 </resources>

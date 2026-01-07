@@ -28,24 +28,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
+import androidx.compose.material.icons.automirrored.rounded.DirectionsRun
 import com.santelocale.R
 import com.santelocale.data.entity.HealthLog
 import com.santelocale.data.entity.getGlucoseStatusDisplay
+import com.santelocale.ui.theme.*
+import com.santelocale.ui.theme.HeaderCornerRadius
+import com.santelocale.ui.theme.HeaderHeight
 import com.santelocale.ui.viewmodel.DashboardViewModel
-
-// Colors - New teal/green harmony palette
-private val PrimaryGreen = Color(0xFF0E7C66)    // Header, primary actions
-private val AccentTeal = Color(0xFF1BA6A6)      // CTA gradient start
-private val TealLight = Color(0xFFB2DFDB)       // Teal subtitle tint
-private val Orange500 = Color(0xFFF97316)
-private val Orange50 = Color(0xFFFFF7ED)
-private val Slate50 = Color(0xFFF4F6F7)         // Updated background
-private val Slate100 = Color(0xFFF1F5F9)
-private val Slate400 = Color(0xFF94A3B8)
-private val Slate700 = Color(0xFF334155)
-private val Slate800 = Color(0xFF1E293B)
-private val TealStatus = Color(0xFFE0F2F1)    // Light teal for status pill bg
-private val TealStatusText = Color(0xFF0E7C66) // Primary green for status text
 
 /**
  * Enhanced Dashboard screen with curved header and overlapping status card.
@@ -122,7 +112,7 @@ fun DashboardScreen(
                     )
 
                     ActionCard(
-                        icon = Icons.Rounded.DirectionsRun,
+                        icon = Icons.AutoMirrored.Rounded.DirectionsRun,
                         label = stringResource(R.string.action_activity),
                         iconTint = Orange500,
                         hoverColor = Orange50,
@@ -139,7 +129,7 @@ fun DashboardScreen(
 
 /**
  * Curved header with gradient background.
- * Height: 260dp, Rounded bottom corners: 32dp
+ * Uses unified HeaderHeight and HeaderCornerRadius for seamless screen transitions.
  */
 @Composable
 private fun CurvedHeader(
@@ -150,8 +140,8 @@ private fun CurvedHeader(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(260.dp)
-            .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
+            .height(HeaderHeight)
+            .clip(RoundedCornerShape(bottomStart = HeaderCornerRadius, bottomEnd = HeaderCornerRadius))
             .background(
                 Brush.verticalGradient(
                     colors = listOf(AccentTeal, PrimaryGreen)
