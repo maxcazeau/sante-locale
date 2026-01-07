@@ -14,9 +14,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.DirectionsWalk
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CleaningServices
-import androidx.compose.material.icons.rounded.DirectionsWalk
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Park
 import androidx.compose.material.icons.rounded.Remove
@@ -51,7 +51,7 @@ private data class ActivityType(
 )
 
 private val activityTypes = listOf(
-    ActivityType("Marche", Icons.Rounded.DirectionsWalk),
+    ActivityType("Marche", Icons.AutoMirrored.Rounded.DirectionsWalk),
     ActivityType("Ménage", Icons.Rounded.CleaningServices),
     ActivityType("Jardinage", Icons.Rounded.Park),
     ActivityType("Autres", Icons.Rounded.MoreHoriz)
