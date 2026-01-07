@@ -5,7 +5,9 @@ import androidx.compose.ui.graphics.Color
 // Primary Colors - Green/Teal harmony palette
 val PrimaryGreen = Color(0xFF0E7C66)   // Header background, primary actions
 val AccentTeal = Color(0xFF1BA6A6)     // CTA buttons, glucose button, accent
-val TealLight = Color(0xFF2DC4C4)      // Lighter teal for hover states
+val TealLight = Color(0xFFB2DFDB)      // Teal subtitle tint (updated from 0xFF2DC4C4 for better contrast)
+val TealStatus = Color(0xFFE0F2F1)     // Light teal for status pill bg
+val TealStatusText = Color(0xFF0E7C66) // Primary green for status text
 
 // Legacy aliases for gradual migration
 val Emerald700 = PrimaryGreen          // Header background
@@ -18,6 +20,7 @@ val Blue600 = AccentTeal               // Glucose button (now teal)
 
 // Orange - Activity
 val Orange50 = Color(0xFFFFF7ED)       // Activity button pressed background
+val Orange100 = Color(0xFFFFEDD5)
 val Orange500 = Color(0xFFF97316)      // Activity button
 val Orange600 = Color(0xFFEA580C)      // Activity button hover
 
@@ -26,6 +29,9 @@ val Yellow500 = Color(0xFFEAB308)
 val Yellow600 = Color(0xFFCA8A04)
 
 // Red - Food Guide "ROUGE" category
+val Red50 = Color(0xFFFEF2F2)
+val Red100 = Color(0xFFFEE2E2)
+val Red500 = Color(0xFFEF4444)
 val Red600 = Color(0xFFDC2626)
 
 // Neutral Colors - Updated background
