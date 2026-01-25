@@ -6,3 +6,7 @@ local.properties
 
 # Keystore file
 keystore.properties
+
+# Build artifacts
+app/release/
+*.log
